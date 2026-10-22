@@ -8,7 +8,7 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, StringProperty
 from bpy.types import Operator
 
-from . import (animation, deform, export, face, fit, live, mocap, poses,
+from . import (animation, deform, export, face, fit, live, makehuman, mocap, poses,
                properties, rig as rigmod, skin, skin_body, ui_icons, utils)
 from .const import MOTIONS, PRESETS, PROPS, WALK_PRESETS
 
@@ -342,6 +342,74 @@ class APEX_OT_build_preset(_ApexOp):
         properties.apply_preset(st, self.preset)
         st.preset = self.preset
         return bpy.ops.apex.build_rig()
+
+
+class APEX_OT_build_realistic(_ApexOp):
+    bl_idname = "apex.build_realistic"
+    bl_label = "Build Realistic Body"
+    bl_description = ("Create a realistic adult body from the MakeHuman data, "
+                      "fit an Apex rig to it and skin it")
+
+    preset: EnumProperty(items=[(k, v[0], "") for k, v in makehuman.PRESETS.items()],
+                         default="REAL_MALE")
+
+    def execute(self, context):
+        st = properties.settings(context)
+        if self.preset == "REAL_CUSTOM":
+            gender, muscle, weight = st.rb_gender, st.rb_muscle, st.rb_weight
+        else:
+            _, gender, muscle, weight = makehuman.PRESETS[self.preset]
+        try:
+            for ob in list(context.selected_objects):
+                ob.select_set(False)
+            body = makehuman.build_object(context, self.preset.lower(), gender,
+                                          muscle, weight)
+            body.select_set(True)
+            context.view_layer.objects.active = body
+            opts = properties.rig_options(st)
+            built, info, stats = fit.rig_character(
+                context, [body], opts,
+                facing_pref=st.fit_facing, refine=st.fit_refine,
+                skin_method=st.skin_method, smooth_iterations=st.smooth_iterations,
+                max_influences=st.max_influences, prefer_skeleton=False, bind=True)
+        except Exception as exc:
+            utils.log.exception("build_realistic failed")
+            self.report({"ERROR"}, f"Could not build the realistic body: {exc}")
+            return {"CANCELLED"}
+        _store_analysis(st, info)
+        report = fit.joint_report(built.arm, [body])
+        st.detected_fit = (f"{report.get('inside', 0)}/{report.get('bones', 0)} "
+                           f"joints inside") if report else ""
+        self.report({"INFO"}, f"Realistic body rigged · {info.summary()}")
+        return {"FINISHED"}
+
+
+class APEX_OT_preview_motion(_ApexOp):
+    bl_idname = "apex.preview_motion"
+    bl_label = "Preview Motion"
+    bl_description = ("Add the selected motion to the rig and play it in the "
+                      "viewport (press Space or Esc to stop)")
+
+    def execute(self, context):
+        st = properties.settings(context)
+        rig = _rig_from_context(context)
+        if rig is None:
+            return {"CANCELLED"}
+        try:
+            action = animation.create_motion(rig.obj, st.motion, start=1.0)
+        except Exception as exc:
+            utils.log.exception("preview motion failed")
+            self.report({"ERROR"}, f"Motion failed: {exc}")
+            return {"CANCELLED"}
+        start, end = utils.action_range(action)
+        scene = context.scene
+        scene.frame_start = int(start)
+        scene.frame_end = max(int(end), int(start) + 1)
+        scene.frame_set(int(start))
+        if not context.screen.is_animation_playing:
+            bpy.ops.screen.animation_play()
+        self.report({"INFO"}, f"Previewing {action.name} ({int(end - start)} frames)")
+        return {"FINISHED"}
 
 
 class APEX_OT_add_motion_pick(_ApexOp):
@@ -1121,6 +1189,8 @@ class APEX_OT_add_eyes(Operator):
 
 
 CLASSES = (
+    APEX_OT_build_realistic,
+    APEX_OT_preview_motion,
     APEX_OT_apply_preset,
     APEX_OT_build_rig,
     APEX_OT_delete_rig,

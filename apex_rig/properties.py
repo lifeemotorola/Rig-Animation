@@ -36,6 +36,13 @@ NAME_MAP_ITEMS = [
 
 
 class ApexSettings(PropertyGroup):
+    # ------------------------------------------------- realistic body
+    rb_gender: FloatProperty(name="Gender", default=0.5, min=0.0, max=1.0,
+                             description="0 = female, 1 = male")
+    rb_muscle: FloatProperty(name="Muscle", default=0.5, min=0.0, max=1.0,
+                             description="0.5 = average")
+    rb_weight: FloatProperty(name="Weight", default=0.5, min=0.0, max=1.0,
+                             description="0.5 = average")
     # ------------------------------------------------------------- build
     preset: EnumProperty(name="Preset", items=PRESET_ITEMS, default="FEMALE",
                          description="Body proportion preset")

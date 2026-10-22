@@ -6,7 +6,7 @@ import bpy
 from bpy.types import Panel
 
 from . import face_icons, properties, rig as rigmod, ui_icons, utils
-from .const import (ADDON_NAME, MOTIONS, PRESETS, PROPS, SKIN_METHODS,
+from .const import (ADDON_NAME, MOTIONS, PROPS, SKIN_METHODS,
                     VERSION_STRING, WALK_PRESETS)
 
 POSE_ORDER = ("A_POSE", "T_POSE", "RELAXED", "COMBAT", "CROUCH", "JUMP",
@@ -91,22 +91,31 @@ class APEX_PT_body(APEX_PT_base, Panel):
     def draw(self, context):
         layout = self.layout
         st = properties.settings(context)
-        icon_ok = ui_icons.icon_id("preset", "FEMALE") != 0
 
-        box = layout.box()
-        box.label(text="Click a body to build it", icon="IMAGE_DATA")
-        items = [(key, data["label"]) for key, data in PRESETS.items()]
-        if icon_ok:
+        # ---- realistic adult body (MakeHuman CC0 data) ----------------
+        # The realistic character is the only body. Poses, motions and
+        # skinning all act on it; the old mannequin presets are no longer offered.
+        rbox = layout.box()
+        rbox.label(text="Realistic Body (MakeHuman)", icon="USER")
+        from .makehuman import PRESETS as REAL
+        real_items = [(k, v[0]) for k, v in REAL.items() if k != "REAL_CUSTOM"]
+        if ui_icons.icon_id("body", "REAL_MALE") != 0:
             ui_icons.picture_grid(
-                box, "apex.build_preset", items, "preset", columns=4,
+                rbox, "apex.build_realistic", real_items, "body", columns=4,
                 props_for=lambda key: {"preset": key})
         else:
-            grid = box.grid_flow(columns=2, align=True)
-            for key, label in items:
-                op = grid.operator("apex.build_preset", text=label)
+            grid = rbox.grid_flow(columns=2, align=True)
+            for key, label in real_items:
+                op = grid.operator("apex.build_realistic", text=label)
                 op.preset = key
-        if not icon_ok:
-            box.label(text="(thumbnails appear in the Blender UI)", icon="INFO")
+        sub = rbox.column(align=True)
+        sub.prop(st, "rb_gender", slider=True)
+        sub.prop(st, "rb_muscle", slider=True)
+        sub.prop(st, "rb_weight", slider=True)
+        op = sub.operator("apex.build_realistic", text="Build Custom Body", icon="ARMATURE_DATA")
+        op.preset = "REAL_CUSTOM"
+        if st.detected_fit:
+            rbox.label(text=f"Fit: {st.detected_fit}", icon="CHECKMARK")
 
         col = layout.column(align=True)
         col.label(text="Proportions", icon="TOOL_SETTINGS")
@@ -339,6 +348,10 @@ class APEX_PT_animation(APEX_PT_base, Panel):
             for key, label in items:
                 op = grid.operator("apex.add_motion_pick", text=label)
                 op.motion = key
+
+        pv = layout.row()
+        pv.scale_y = 1.2
+        pv.operator("apex.preview_motion", text="Preview Motion", icon="PLAY")
 
         col = layout.column(align=True)
         row = col.row(align=True)

@@ -9,7 +9,7 @@ from __future__ import annotations
 ADDON_NAME = "Apex Rig & Motion"
 ADDON_ID = "apex_rig"
 VERSION = (1, 0, 0)
-VERSION_STRING = "1.1.0"
+VERSION_STRING = "1.2.0"
 
 RIG_ID_KEY = "apex_rig"          # marks an armature as an Apex rig
 RIG_VERSION_KEY = "apex_version"

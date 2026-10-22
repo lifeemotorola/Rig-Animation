@@ -42,6 +42,8 @@ def preview_path(kind: str, key: str) -> str:
 
 def icon_id(kind: str, key: str) -> int:
     """Cached icon id for ``previews/<kind>_<key>.png`` (0 when unavailable)."""
+    if kind.startswith("face_"):
+        kind = kind[5:]          # face_expression -> previews/expression_*.png
     cache_key = f"{kind}_{key}"
     if cache_key in _loaded:
         value = _loaded[cache_key]

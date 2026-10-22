@@ -5,7 +5,7 @@ from __future__ import annotations
 import bpy
 from bpy.types import Panel
 
-from . import properties, rig as rigmod, ui_icons, utils
+from . import face_icons, properties, rig as rigmod, ui_icons, utils
 from .const import (ADDON_NAME, MOTIONS, PRESETS, PROPS, SKIN_METHODS,
                     VERSION_STRING, WALK_PRESETS)
 
@@ -413,6 +413,108 @@ class APEX_PT_export(APEX_PT_base, Panel):
             col.label(text=f"{len(meshes)} skinned mesh(es)", icon="MESH_DATA")
 
 
+class APEX_PT_face(APEX_PT_base, Panel):
+    bl_label = "Face"
+    bl_idname = "APEX_PT_face"
+
+    def draw(self, context):
+        from . import face
+        layout = self.layout
+        st = properties.settings(context)
+        arm = utils.active_rig() or utils.first_rig()
+        if arm is None:
+            layout.label(text="Build or select an Apex rig first", icon="INFO")
+            return
+        active = face.has_face(arm)
+        row = layout.row(align=True)
+        row.scale_y = 1.25
+        if active:
+            info = face.face_report(arm)
+            row.label(text=f"{info['bones']} face bones · {info['controls']} controls",
+                      icon="CHECKMARK")
+        else:
+            row.operator("apex.add_eyes", text="Add Facial Rig", icon="ADD")
+            return
+
+        layout.separator()
+        grid = face_icons.picture_grid(layout, "expression", face.EXPRESSION_ORDER,
+                                       columns=4, operator="apex.live_expression")
+        layout.separator()
+
+        col = layout.column(align=True)
+        col.operator("apex.add_eyes", text="Add Eyes + Mouth", icon="HIDE_OFF")
+        col.operator("apex.deform_check", text="Check Face Deformation",
+                     icon="MOD_ARMATURE")
+
+        box = layout.box()
+        box.label(text="Live controls", icon="POSE_HLT")
+        props_bone = arm.pose.bones.get(arm.get("root_bone", "root"))
+        if props_bone is None:
+            return
+        groups = (
+            ("Jaw", ("jaw_open", "jaw_side", "jaw_thrust", "chin_raise")),
+            ("Lips", ("lip_up_raise", "lip_low_drop", "mouth_pucker",
+                      "mouth_smile.L", "mouth_smile.R", "mouth_frown.L")),
+            ("Brows & eyes", ("brow_raise.L", "brow_inner_up", "brow_furrow",
+                              "blink.L", "blink.R", "squint.L")),
+        )
+        for title, names in groups:
+            sub = box.column(align=True)
+            sub.label(text=title)
+            for name in names:
+                if name in props_bone.keys():
+                    sub.prop(props_bone, f'["{name}"]', text=name.replace("_", " "),
+                             slider=True)
+
+
+class APEX_PT_live(APEX_PT_base, Panel):
+    bl_label = "Live Mocap (WiFi camera)"
+    bl_idname = "APEX_PT_live"
+
+    def draw(self, context):
+        from . import live
+        layout = self.layout
+        st = properties.settings(context)
+        running = live.is_running()
+
+        box = layout.box()
+        row = box.row(align=True)
+        row.scale_y = 1.3
+        if running:
+            row.operator("apex.live_stop", text="Stop", icon="PAUSE")
+        else:
+            row.operator("apex.live_start", text="Start Server", icon="PLAY")
+        box.operator("apex.live_copy", text=st.live_url or "Copy Address", icon="COPY_ID")
+
+        info = box.column(align=True)
+        info.label(text=("Server running" if running else "Server stopped"),
+                   icon="CHECKMARK" if running else "X")
+        info.label(text=f"Frames {st.live_frames}   {st.live_fps:.1f} fps   "
+                        f"clients {st.live_clients}")
+
+        col = layout.column(align=True)
+        col.prop(st, "live_port")
+        col.prop(st, "live_head")
+        col.prop(st, "live_smooth")
+
+        layout.separator()
+        row = layout.row(align=True)
+        row.scale_y = 1.25
+        row.operator("apex.live_record", text="Record Take",
+                     icon="REC" if not live.STATE["recording"] else "PAUSE")
+        row.operator("apex.live_bake", text="Bake", icon="KEY_HLT")
+
+        help_box = layout.box()
+        help_box.label(text="How to connect", icon="QUESTION")
+        for line in ("1. Start the server (this panel).",
+                     "2. Phone: same WiFi as this computer.",
+                     "3. Open the copied address in the phone browser.",
+                     "4. Allow the camera, press Start camera.",
+                     "5. Move your face - the rig follows live."):
+            help_box.label(text=line)
+
+
+
 CLASSES = (
     APEX_PT_character,
     APEX_PT_body,
@@ -422,6 +524,8 @@ CLASSES = (
     APEX_PT_animation,
     APEX_PT_retarget,
     APEX_PT_export,
+    APEX_PT_face,
+    APEX_PT_live,
 )
 
 

@@ -8,8 +8,8 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, StringProperty
 from bpy.types import Operator
 
-from . import (animation, deform, export, fit, mocap, poses, properties,
-               rig as rigmod, skin, skin_body, ui_icons, utils)
+from . import (animation, deform, export, face, fit, live, mocap, poses,
+               properties, rig as rigmod, skin, skin_body, ui_icons, utils)
 from .const import MOTIONS, PRESETS, PROPS, WALK_PRESETS
 
 LIMB_ITEMS = (
@@ -439,6 +439,12 @@ class APEX_OT_weight_op(_ApexOp):
         if rig is None:
             return {"CANCELLED"}
         meshes = _selected_meshes(context) or utils.meshes_of_armature(rig.obj)
+        # dedicated props (eyes, mouth interior) only own one bone each, so they
+        # would report every other bone as "unweighted": audit the real skin only
+        props_meshes = [ob for ob in meshes
+                        if ob.get("apex_eye") or ob.get("apex_mouth")]
+        skin_meshes = [ob for ob in meshes if ob not in props_meshes]
+        meshes = skin_meshes or meshes
         if not meshes:
             self.report({"WARNING"}, "No skinned meshes found")
             return {"CANCELLED"}
@@ -477,6 +483,12 @@ class APEX_OT_deform_check(_ApexOp):
         if rig is None:
             return {"CANCELLED"}
         meshes = _selected_meshes(context) or utils.meshes_of_armature(rig.obj)
+        # dedicated props (eyes, mouth interior) only own one bone each, so they
+        # would report every other bone as "unweighted": audit the real skin only
+        props_meshes = [ob for ob in meshes
+                        if ob.get("apex_eye") or ob.get("apex_mouth")]
+        skin_meshes = [ob for ob in meshes if ob not in props_meshes]
+        meshes = skin_meshes or meshes
         if not meshes:
             self.report({"WARNING"}, "No skinned meshes found")
             return {"CANCELLED"}
@@ -497,7 +509,8 @@ class APEX_OT_deform_check(_ApexOp):
                 static_anim += [name for name in coverage["static_bones"]
                                 if name not in static_anim]
         worst.sort(key=lambda kv: kv[1])
-        st.deform_report = (f"{len(meshes)} mesh(es) · "
+        prop_note = (f" · {len(props_meshes)} prop mesh(es)" if props_meshes else "")
+        st.deform_report = (f"{len(meshes)} mesh(es){prop_note} · "
                             f"{len(empty_all)} bones without weights · "
                             f"{len(stalled_all)} bones that do not move their verts")
         details = [f"empty: {', '.join(empty_all[:6])}" if empty_all else "empty: none",
@@ -584,6 +597,12 @@ class APEX_OT_weight_report(_ApexOp):
         if rig is None:
             return {"CANCELLED"}
         meshes = _selected_meshes(context) or utils.meshes_of_armature(rig.obj)
+        # dedicated props (eyes, mouth interior) only own one bone each, so they
+        # would report every other bone as "unweighted": audit the real skin only
+        props_meshes = [ob for ob in meshes
+                        if ob.get("apex_eye") or ob.get("apex_mouth")]
+        skin_meshes = [ob for ob in meshes if ob not in props_meshes]
+        meshes = skin_meshes or meshes
         if not meshes:
             self.report({"WARNING"}, "No skinned meshes found")
             return {"CANCELLED"}
@@ -979,6 +998,128 @@ class APEX_OT_export(_ApexOp):
         return {"FINISHED"}
 
 
+# ---------------------------------------------------------------------------
+# Live mocap (phone camera over WiFi)
+# ---------------------------------------------------------------------------
+class APEX_OT_live_start(Operator):
+    bl_idname = "apex.live_start"
+    bl_label = "Start Live Mocap"
+    bl_description = ("Start the WiFi mocap server. Open the printed address on "
+                      "your phone camera and the rig follows you")
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        settings = context.scene.apex_settings
+        arm = utils.active_rig() or utils.first_rig()
+        if arm is None:
+            self.report({"ERROR"}, "No Apex rig in the scene")
+            return {"CANCELLED"}
+        url = live.start(settings.live_port)
+        settings.live_url = url
+        self.report({"INFO"}, f"Live mocap on {url}")
+        return {"FINISHED"}
+
+
+class APEX_OT_live_stop(Operator):
+    bl_idname = "apex.live_stop"
+    bl_label = "Stop Live Mocap"
+    bl_description = "Stop the WiFi mocap server"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        live.stop()
+        context.scene.apex_settings.live_fps = 0.0
+        self.report({"INFO"}, "Live mocap stopped")
+        return {"FINISHED"}
+
+
+class APEX_OT_live_copy(Operator):
+    bl_idname = "apex.live_copy"
+    bl_label = "Copy Address"
+    bl_description = "Copy the phone address to the clipboard"
+
+    def execute(self, context):
+        settings = context.scene.apex_settings
+        url = settings.live_url or "start the server first"
+        try:
+            context.window_manager.clipboard = url
+            self.report({"INFO"}, f"Copied {url}")
+        except Exception:
+            self.report({"WARNING"}, url)
+        return {"FINISHED"}
+
+
+class APEX_OT_live_record(Operator):
+    bl_idname = "apex.live_record"
+    bl_label = "Record Take"
+    bl_description = "Start or stop recording the live tracking into a take"
+    bl_options = {"REGISTER"}
+
+    def execute(self, context):
+        if live.STATE["recording"]:
+            count = live.stop_recording()
+            self.report({"INFO"}, f"Take stopped: {count} frames")
+        else:
+            live.start_recording()
+            self.report({"INFO"}, "Recording... press again to stop")
+        return {"FINISHED"}
+
+
+class APEX_OT_live_bake(Operator):
+    bl_idname = "apex.live_bake"
+    bl_label = "Bake Take"
+    bl_description = "Turn the recorded take into keyframes on the rig"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        arm = utils.active_rig() or utils.first_rig()
+        if arm is None or not live.STATE["take"]:
+            self.report({"ERROR"}, "Nothing recorded")
+            return {"CANCELLED"}
+        action = live.bake_take(arm, fps=live.STATE.get("fps") or 30.0)
+        if action is None:
+            self.report({"ERROR"}, "Bake failed")
+            return {"CANCELLED"}
+        self.report({"INFO"}, f"Baked {len(live.STATE['take'])} frames into {action.name}")
+        return {"FINISHED"}
+
+
+class APEX_OT_live_expression(Operator):
+    bl_idname = "apex.live_expression"
+    bl_label = "Face Expression"
+    bl_description = "Apply an expression to the face rig"
+    bl_options = {"REGISTER", "UNDO"}
+
+    expression: bpy.props.StringProperty(default="SMILE")
+
+    def execute(self, context):
+        arm = utils.active_rig() or utils.first_rig()
+        if arm is None:
+            return {"CANCELLED"}
+        face.apply_expression(arm, self.expression)
+        return {"FINISHED"}
+
+
+class APEX_OT_add_eyes(Operator):
+    bl_idname = "apex.add_eyes"
+    bl_label = "Add Eyes"
+    bl_description = "Create eyeballs bound to the face rig"
+    bl_options = {"REGISTER", "UNDO"}
+
+    def execute(self, context):
+        arm = utils.active_rig() or utils.first_rig()
+        if arm is None:
+            self.report({"ERROR"}, "No Apex rig")
+            return {"CANCELLED"}
+        if not face.has_face(arm):
+            face.add_face_bones(arm, context)
+        eyes = face.add_eyes(context, arm)
+        face.add_mouth_interior(context, arm)
+        self.report({"INFO"}, f"Added {len(eyes)} eyes")
+        return {"FINISHED"}
+
+
+
 CLASSES = (
     APEX_OT_apply_preset,
     APEX_OT_build_rig,
@@ -1018,6 +1159,13 @@ CLASSES = (
     APEX_OT_apply_name_map,
     APEX_OT_retarget,
     APEX_OT_export,
+    APEX_OT_live_start,
+    APEX_OT_live_stop,
+    APEX_OT_live_copy,
+    APEX_OT_live_record,
+    APEX_OT_live_bake,
+    APEX_OT_live_expression,
+    APEX_OT_add_eyes,
 )
 
 

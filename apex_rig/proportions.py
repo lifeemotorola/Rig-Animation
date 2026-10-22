@@ -75,6 +75,7 @@ class RigOptions:
     ik_legs: bool = True
     pole_targets: bool = True
     roll_arms: bool = True
+    face: bool = True
 
     @classmethod
     def from_preset(cls, preset_key: str, **overrides) -> "RigOptions":

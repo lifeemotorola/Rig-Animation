@@ -143,6 +143,21 @@ class ApexSettings(PropertyGroup):
     show_advanced: BoolProperty(name="Advanced", default=False)
     pole_angle_step: FloatProperty(name="Pole Step", default=5.0, min=1.0, max=45.0)
 
+    # ------------------------------------------------------------------ live
+    live_port: IntProperty(name="Port", default=8770, min=1024, max=65535,
+                           description="Port the phone connects to")
+    live_url: StringProperty(name="Address", default="",
+                             description="Open this address on your phone")
+    live_token: StringProperty(name="PIN", default="",
+                               description="Optional access code appended to the URL")
+    live_head: BoolProperty(name="Drive Head", default=True,
+                            description="Use the phone to rotate the neck and head")
+    live_smooth: FloatProperty(name="Smoothing", default=0.55, min=0.0, max=0.95,
+                               description="0 = raw tracking, 0.95 = very smooth")
+    live_frames: IntProperty(name="Frames", default=0, min=0)
+    live_fps: FloatProperty(name="FPS", default=0.0, min=0.0)
+    live_clients: IntProperty(name="Clients", default=0, min=0)
+
 
 CLASSES = (ApexSettings,)
 

@@ -313,6 +313,25 @@ def find_nla_track(owner, name: str):
     return None
 
 
+def active_rig():
+    """The active/selected Apex armature, if any."""
+    ob = bpy.context.view_layer.objects.active if bpy.context.view_layer else None
+    if ob is not None and ob.type == "ARMATURE" and is_apex_rig(ob):
+        return ob
+    for other in getattr(bpy.context, "selected_objects", []) or []:
+        if other.type == "ARMATURE" and is_apex_rig(other):
+            return other
+    return None
+
+
+def first_rig():
+    """First Apex armature in the file."""
+    for ob in bpy.data.objects:
+        if ob.type == "ARMATURE" and is_apex_rig(ob):
+            return ob
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Drivers
 # ---------------------------------------------------------------------------

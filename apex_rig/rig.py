@@ -524,6 +524,14 @@ def build_rig(context, opts: RigOptions, name: str = RIG_NAME,
     _store_name_map(arm, specs)
     _create_props(arm, opts)
 
+    if getattr(opts, "face", True):
+        try:
+            from . import face as face_mod
+            face_mod.add_face_bones(arm)
+            utils.log.info("Apex face rig: %d bones", len(face_mod.FACE_BONE_NAMES))
+        except Exception as exc:
+            utils.log.warning("face rig skipped: %s", exc)
+
     constraint_ctx: dict = {}
     for side in SIDE:
         _make_ik(arm, side, constraint_ctx, {s.name: s for s in specs}, opts)

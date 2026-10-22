@@ -293,6 +293,13 @@ def skin_mesh(arm, mesh_obj, method="APEX", smooth_iterations=3,
                                falloff)
     mod = _ensure_binding(arm, mesh_obj)
     stats["modifier"] = mod.name
+    try:
+        from . import face as face_mod
+        if face_mod.has_face(arm):
+            info = face_mod.apply_face_weights(mesh_obj, arm)
+            stats["face_verts"] = info.get("face_verts", 0)
+    except Exception as exc:
+        utils.log.debug("face weights skipped: %s", exc)
     stats["seconds"] = round(time.time() - started, 3)
     return stats
 

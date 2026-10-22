@@ -25,7 +25,30 @@ class APEX_PT_base:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Apex"
-    bl_options = {"DEFAULT_CLOSED"}
+    bl_options = set()
+
+
+class APEX_PT_general(APEX_PT_base, Panel):
+    """Root panel (BlenRig-style): every other Apex panel nests under it."""
+    bl_label = "Apex Rig & Motion"
+    bl_idname = "APEX_PT_general"
+
+    def draw(self, context):
+        layout = self.layout
+        rig = rigmod.get_rig()
+        _layout_header(layout, rig)
+        if rig is None:
+            layout.label(text="Start with My Character or a Realistic Body", icon="INFO")
+        else:
+            layout.label(text=f"Rig: {rig.obj.name}", icon="OUTLINER_OB_ARMATURE")
+
+
+def _child(cls, order, parent="APEX_PT_general", closed=False):
+    """Attach a section panel under the root with a fixed order."""
+    cls.bl_parent_id = parent
+    cls.bl_order = order
+    cls.bl_options = {"DEFAULT_CLOSED"} if closed else set()
+    return cls
 
 
 # ---------------------------------------------------------------------------
@@ -181,7 +204,6 @@ class APEX_PT_poses(APEX_PT_base, Panel):
 class APEX_PT_controls(APEX_PT_base, Panel):
     bl_label = "Controls"
     bl_idname = "APEX_PT_controls"
-    bl_options = {"DEFAULT_CLOSED"}
 
     @classmethod
     def poll(cls, context):
@@ -530,18 +552,24 @@ class APEX_PT_live(APEX_PT_base, Panel):
 
 
 
-CLASSES = (
-    APEX_PT_character,
-    APEX_PT_body,
-    APEX_PT_poses,
-    APEX_PT_controls,
-    APEX_PT_skin,
-    APEX_PT_animation,
-    APEX_PT_retarget,
-    APEX_PT_export,
-    APEX_PT_face,
-    APEX_PT_live,
+# (class, order, start collapsed) - BlenRig-style: setup and motion open,
+# secondary tools collapsed under the root panel.
+_CHILDREN = (
+    (APEX_PT_character, 1, False),
+    (APEX_PT_body, 2, False),
+    (APEX_PT_poses, 3, False),
+    (APEX_PT_controls, 4, True),
+    (APEX_PT_skin, 5, True),
+    (APEX_PT_face, 6, True),
+    (APEX_PT_animation, 7, False),
+    (APEX_PT_retarget, 8, True),
+    (APEX_PT_live, 9, True),
+    (APEX_PT_export, 10, True),
 )
+for _cls, _order, _closed in _CHILDREN:
+    _child(_cls, _order, closed=_closed)
+
+CLASSES = (APEX_PT_general,) + tuple(c for c, _o, _c in _CHILDREN)
 
 
 def register():

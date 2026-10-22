@@ -181,8 +181,10 @@ apex_character.glb  290 660 B   skins:1 (52 joints)  animations:5  meshes:1
 
 ## 9. UI
 
-Eight N-panel sub-panels under **Apex**: `My Character` (fit to an existing mesh),
-`Body Presets`, `Poses`, `Controls`, `Skinning`, `Animation`, `Mocap / Retarget`, `Export`.
+One root panel, **Apex Rig & Motion**, in the **Apex** tab (BlenRig-style layout) with
+nested sub-panels in order: `My Character` (fit to an existing mesh), `Body Presets`, `Poses`,
+`Controls`, `Skinning`, `Face`, `Animation`, `Mocap / Retarget`, `Live Mocap`, `Export`.
+Setup and motion panels open by default; the secondary tools start collapsed.
 All build settings are live scene settings with descriptions, slider ranges and soft limits.
 
 **Picture-based selection.** Presets, poses, motions and skinning methods are chosen from

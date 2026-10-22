@@ -68,7 +68,7 @@ class APEX_PT_character(APEX_PT_base, Panel):
         col.prop(st, "fit_facing", text="Facing")
         col.prop(st, "fit_prefer_skeleton", text="Use Existing Skeleton")
         col.prop(st, "fit_refine", text="Fit Proportions")
-        col.prop(st, "fit_remove_rig", text="Replace Existing Rig")
+        col.prop(st, "fit_replace_rig", text="Replace Existing Rig")
         col.prop(st, "fit_skin", text="Skin Afterwards")
 
         big = box.column(align=True)

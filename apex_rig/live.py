@@ -29,7 +29,6 @@ import re
 import socket
 import ssl
 import struct
-import subprocess
 import tempfile
 import threading
 import time
@@ -87,19 +86,22 @@ TLS_STATE = {"ip": "", "ctx": None, "der": b""}
 
 
 def _tls_material(ip: str):
-    """Create (or reuse) a self-signed certificate for *ip*. Returns paths."""
+    """Create (or reuse) a self-signed certificate for *ip*. Returns paths.
+
+    Built in pure Python (see selfsign.py), so no openssl binary is needed.
+    """
+    from . import selfsign
     base = os.path.join(tempfile.gettempdir(), "apex_live_tls")
     os.makedirs(base, exist_ok=True)
     safe = re.sub(r"[^0-9A-Za-z.]", "_", ip)
     cert = os.path.join(base, f"cert_{safe}.pem")
     key = os.path.join(base, f"key_{safe}.pem")
     if not (os.path.exists(cert) and os.path.exists(key)):
-        subprocess.run(
-            ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
-             "-keyout", key, "-out", cert, "-days", "825",
-             "-subj", "/CN=Apex Live Mocap",
-             "-addext", f"subjectAltName=IP:{ip},IP:127.0.0.1,DNS:localhost"],
-            check=True, capture_output=True, timeout=60)
+        cert_pem, key_pem, _der = selfsign.generate(ip)
+        with open(key, "w", encoding="ascii") as fh:
+            fh.write(key_pem)
+        with open(cert, "w", encoding="ascii") as fh:
+            fh.write(cert_pem)
     return cert, key
 
 

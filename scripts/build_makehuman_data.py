@@ -12,7 +12,7 @@ Run with any Python that has numpy:
 
     python3 scripts/build_makehuman_data.py --mh-data mh/makehuman-master/makehuman/data
 
-Output: apex_rig/data/makehuman_adult.npz containing
+Output: surigandanim/data/makehuman_adult.npz containing
   base        float32 (N, 3)   all base vertices (MakeHuman units, decimetres)
   body_idx    int32            vertex indices of the ``body`` group
   body_faces  int32 (F, 4)     body faces (remapped to body_idx positions; -1 pads)
@@ -41,7 +41,7 @@ def wanted(name: str) -> bool:
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--mh-data", required=True)
-    ap.add_argument("--out", default=os.path.join(ROOT, "apex_rig", "data", "makehuman_adult.npz"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "surigandanim", "data", "makehuman_adult.npz"))
     args = ap.parse_args()
 
     base, group_faces = [], []

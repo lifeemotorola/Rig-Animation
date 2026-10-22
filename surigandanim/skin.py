@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - automatic skinning.
+"""SuRigandAnim - automatic skinning.
 
 Three methods are supported:
 

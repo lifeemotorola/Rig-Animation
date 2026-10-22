@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - fit the rig to a character that already exists in the scene.
+"""SuRigandAnim - fit the rig to a character that already exists in the scene.
 
 Two measurement paths are supported:
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - deformation quality toolkit.
+"""SuRigandAnim - deformation quality toolkit.
 
 Tools that make a bound character actually deform well:
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - shared utilities.
+"""SuRigandAnim - shared utilities.
 
 Small, dependency-free helpers used across the add-on.  Every Blender version
 quirk (legacy F-Curves vs. 5.x slotted actions, NLA slots, drivers) is isolated
@@ -15,7 +15,7 @@ from typing import Iterable, Sequence
 import bpy
 from mathutils import Euler, Matrix, Quaternion, Vector
 
-log = logging.getLogger("apex_rig")
+log = logging.getLogger("surigandanim")
 if not log.handlers:
     _h = logging.StreamHandler()
     _h.setFormatter(logging.Formatter("[Apex] %(levelname)s: %(message)s"))
@@ -127,7 +127,7 @@ def from_json(text: str, default=None):
 # ---------------------------------------------------------------------------
 # Object / data lookups
 # ---------------------------------------------------------------------------
-def is_apex_rig(obj) -> bool:
+def is_surigandanim(obj) -> bool:
     from .const import RIG_ID_KEY
 
     return (
@@ -141,14 +141,14 @@ def is_apex_rig(obj) -> bool:
 def active_armature(require_apex: bool = False):
     ob = bpy.context.view_layer.objects.active
     if ob is not None and ob.type == "ARMATURE":
-        if not require_apex or is_apex_rig(ob):
+        if not require_apex or is_surigandanim(ob):
             return ob
     if require_apex:
         for o in bpy.context.selected_objects:
-            if is_apex_rig(o):
+            if is_surigandanim(o):
                 return o
         for o in bpy.data.objects:
-            if is_apex_rig(o):
+            if is_surigandanim(o):
                 return o
     return None
 
@@ -316,10 +316,10 @@ def find_nla_track(owner, name: str):
 def active_rig():
     """The active/selected Apex armature, if any."""
     ob = bpy.context.view_layer.objects.active if bpy.context.view_layer else None
-    if ob is not None and ob.type == "ARMATURE" and is_apex_rig(ob):
+    if ob is not None and ob.type == "ARMATURE" and is_surigandanim(ob):
         return ob
     for other in getattr(bpy.context, "selected_objects", []) or []:
-        if other.type == "ARMATURE" and is_apex_rig(other):
+        if other.type == "ARMATURE" and is_surigandanim(other):
             return other
     return None
 
@@ -327,7 +327,7 @@ def active_rig():
 def first_rig():
     """First Apex armature in the file."""
     for ob in bpy.data.objects:
-        if ob.type == "ARMATURE" and is_apex_rig(ob):
+        if ob.type == "ARMATURE" and is_surigandanim(ob):
             return ob
     return None
 

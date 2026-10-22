@@ -2,10 +2,10 @@ import sys, os, math
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bpy
 from mathutils import Vector
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, poses, utils, deform
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, poses, utils, deform
 
-apex_rig.register()
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 scene.render.engine = "CYCLES"; scene.cycles.device = "CPU"; scene.cycles.samples = 48

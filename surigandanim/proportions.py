@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - anthropometric skeleton definition.
+"""SuRigandAnim - anthropometric skeleton definition.
 
 All joints are derived from a single height value plus stylisation factors, so
 the rig can be rebuilt at any scale while staying anatomically coherent.
-The output is a flat list of :class:`BoneSpec` consumed by :mod:`apex_rig.rig`.
+The output is a flat list of :class:`BoneSpec` consumed by :mod:`surigandanim.rig`.
 
 Coordinate system: Blender native, +Z up, character faces -Y, character's left
 is +X.  Units are metres.

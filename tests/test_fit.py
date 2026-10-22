@@ -2,9 +2,9 @@ import sys, math, time
 sys.path.insert(0,'/home/user')
 import bpy
 from mathutils import Vector, Euler
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, fit, utils, properties
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, fit, utils, properties
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 # --- build a stand-in "user character": mannequin in a T-ish/A pose, odd transform

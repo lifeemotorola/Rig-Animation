@@ -2,9 +2,9 @@ import sys, math
 sys.path.insert(0,'/home/user')
 import bpy, mathutils
 from mathutils import Euler, Vector
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, utils, properties, fit, mocap
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, utils, properties, fit, mocap
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 st = properties.settings(bpy.context)
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - N-panel UI (picture driven)."""
+"""SuRigandAnim - N-panel UI (picture driven)."""
 from __future__ import annotations
 
 import bpy
@@ -24,13 +24,13 @@ def _layout_header(layout, rig):
 class APEX_PT_base:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
-    bl_category = "Apex"
+    bl_category = "SuRigandAnim"
     bl_options = set()
 
 
 class APEX_PT_general(APEX_PT_base, Panel):
     """Root panel (BlenRig-style): every other Apex panel nests under it."""
-    bl_label = "Apex Rig & Motion"
+    bl_label = "SuRigandAnim"
     bl_idname = "APEX_PT_general"
 
     def draw(self, context):

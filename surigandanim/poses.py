@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - pose library and posing primitives.
+"""SuRigandAnim - pose library and posing primitives.
 
 Poses are authored the way an animator thinks: *aim* an arm at a direction,
 drop the hips, keep the feet planted (IK), curl the fingers.  Every pose is a

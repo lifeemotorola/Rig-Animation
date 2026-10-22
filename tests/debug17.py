@@ -1,8 +1,8 @@
 import sys, logging
 sys.path.insert(0,'/home/user')
 import bpy
-from apex_rig import rig as rigmod, utils
-from apex_rig.proportions import RigOptions
+from surigandanim import rig as rigmod, utils
+from surigandanim.proportions import RigOptions
 utils.log.setLevel(logging.DEBUG)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 o = RigOptions.from_preset("FEMALE")

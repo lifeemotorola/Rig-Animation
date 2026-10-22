@@ -1,6 +1,6 @@
 import bpy, os
-from bl_ext.user_default import apex_rig as ext
-from bl_ext.user_default.apex_rig import properties as ext_props
+from bl_ext.user_default import surigandanim as ext
+from bl_ext.user_default.surigandanim import properties as ext_props
 
 print("extension imported:", ext.__version__, flush=True)
 bpy.ops.wm.read_homefile(use_empty=True)

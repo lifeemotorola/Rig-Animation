@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - operators."""
+"""SuRigandAnim - operators."""
 from __future__ import annotations
 
 import os

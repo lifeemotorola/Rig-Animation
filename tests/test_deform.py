@@ -1,9 +1,9 @@
 import sys, time
 sys.path.insert(0,'/home/user')
 import bpy, numpy as np
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, skin, deform, utils
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, skin, deform, utils
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 arm = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm
 body = skin_body.add_mannequin(bpy.context, arm, resolution=0.014)

@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - an advanced human rig + animation toolkit for Blender 5.2.
+"""SuRigandAnim - an advanced human rig + animation toolkit for Blender 5.2.
 
 The add-on is a Blender extension: it is imported as
-``bl_ext.<repo>.apex_rig`` and therefore must not define ``bl_info``.
+``bl_ext.<repo>.surigandanim`` and therefore must not define ``bl_info``.
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import bpy
 from . import const
 
 __version__ = const.VERSION_STRING
-__package_id__ = "apex_rig"
+__package_id__ = "surigandanim"
 
 __APEX_MODULES = (
     "utils",

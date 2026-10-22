@@ -2,10 +2,10 @@ import sys, os, math, time
 sys.path.insert(0,'/home/user')
 import bpy
 from mathutils import Vector, Matrix
-import apex_rig
-from apex_rig import rig as rigmod, animation as anim, mocap, export as apex_export, utils, skin
+import surigandanim
+from surigandanim import rig as rigmod, animation as anim, mocap, export as apex_export, utils, skin
 
-apex_rig.register()
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 st = scene.apex_settings

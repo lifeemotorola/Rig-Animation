@@ -1,9 +1,9 @@
 import sys, traceback
 sys.path.insert(0, '/home/user')
 import bpy
-from apex_rig import rig as rigmod
-from apex_rig.proportions import RigOptions
-from apex_rig import utils
+from surigandanim import rig as rigmod
+from surigandanim.proportions import RigOptions
+from surigandanim import utils
 
 report=[]
 def p(*a): report.append(" ".join(str(x) for x in a))

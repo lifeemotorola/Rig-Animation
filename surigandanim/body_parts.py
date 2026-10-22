@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - automatic body-part detection.
+"""SuRigandAnim - automatic body-part detection.
 
 Every skinned vertex is labelled with the body part of its dominant deform
 bone (the bone with the largest weight).  The labels become vertex groups

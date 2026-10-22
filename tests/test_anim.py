@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0,'/home/user')
 import bpy, math
-from apex_rig import rig as rigmod, animation as anim, utils
-from apex_rig.proportions import RigOptions
+from surigandanim import rig as rigmod, animation as anim, utils
+from surigandanim.proportions import RigOptions
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene

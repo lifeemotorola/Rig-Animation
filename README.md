@@ -1,7 +1,7 @@
-# Apex Rig & Motion 1.1.0
+# SuRigandAnim 1.3.0
 
 An advanced human **control rig + animation toolkit** for **Blender 5.2 LTS**, packaged as a
-native Blender **extension** (`apex_rig-1.0.0.zip`).
+native Blender **extension** (`surigandanim-1.3.0.zip`).
 
 ![Apex rig fitted to a character, mid-walk](out/apex_fitted.png)
 
@@ -10,14 +10,14 @@ native Blender **extension** (`apex_rig-1.0.0.zip`).
 ## 1. Install
 
 1. Blender **5.2.0 – 5.2.x** (the manifest refuses anything outside that range).
-2. `Edit ▸ Preferences ▸ Get Extensions ▸ ⌄ ▸ Install from Disk…` → pick `dist/apex_rig-1.0.0.zip`.
-3. Press `N` in the 3D View and open the **Apex** tab.
+2. Either drag `dist/surigandanim-1.3.0.zip` onto the Blender window, or use `Edit ▸ Preferences ▸ Get Extensions ▸ ⌄ ▸ Install from Disk…` and pick the same zip.
+3. Press `N` in the 3D View and open the **SuRigandAnim** tab.
 
 Headless install (what the test suite does):
 
 ```bash
-blender --command extension install-file -r user_default -e dist/apex_rig-1.0.0.zip
-blender -b --python-expr "import bpy; bpy.ops.preferences.addon_enable(module='bl_ext.user_default.apex_rig')"
+blender --command extension install-file -r user_default -e dist/surigandanim-1.3.0.zip
+blender -b --python-expr "import bpy; bpy.ops.preferences.addon_enable(module='bl_ext.user_default.surigandanim')"
 ```
 
 ---
@@ -181,7 +181,7 @@ apex_character.glb  290 660 B   skins:1 (52 joints)  animations:5  meshes:1
 
 ## 9. UI
 
-One root panel, **Apex Rig & Motion**, in the **Apex** tab (BlenRig-style layout) with
+One root panel, **SuRigandAnim**, in the **Apex** tab (BlenRig-style layout) with
 nested sub-panels in order: `My Character` (fit to an existing mesh), `Body Presets`, `Poses`,
 `Layers & Picker`, `Controls`, `Skinning`, `Face`, `Animation`, `Mocap / Retarget`, `Live Mocap`, `Export`.
 
@@ -256,7 +256,7 @@ raise `ik_stretch` (or move `cog`) to extend it.
 ## 11. Files
 
 ```
-apex_rig/
+surigandanim/
   __init__.py        extension entry point (register/unregister, no bl_info)
   blender_manifest.toml
   const.py           presets, palettes, property table, motion catalogue
@@ -278,7 +278,7 @@ apex_rig/
 scripts/
   make_previews.py   headless thumbnail renderer (Cycles CPU, ~40 s)
   render_showcase.py six-pose beauty render (out/apex_showcase.png)
-dist/apex_rig-1.1.0.zip   built with `blender --command extension build`
+dist/surigandanim-1.3.0.zip   built with `blender --command extension build`
 out/                 demo .blend, .glb, .fbx, preview and showcase renders
 tests/               acceptance, deform, fit, extension and v2 regression scripts
 ```

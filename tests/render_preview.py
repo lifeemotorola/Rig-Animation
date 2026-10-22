@@ -2,10 +2,10 @@ import sys, math
 sys.path.insert(0,'/home/user')
 import bpy
 from mathutils import Vector
-import apex_rig
-from apex_rig import rig as rigmod, animation as anim, utils
+import surigandanim
+from surigandanim import rig as rigmod, animation as anim, utils
 
-apex_rig.register()
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 scene.render.engine = 'CYCLES'
@@ -18,7 +18,7 @@ scene.render.film_transparent = False
 scene.view_settings.look = 'AgX - Medium High Contrast' if 'AgX - Medium High Contrast' in [i.identifier for i in scene.view_settings.bl_rna.properties['look'].enum_items] else 'None'
 
 arm = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm
-from apex_rig import skin_body
+from surigandanim import skin_body
 body = skin_body.add_mannequin(bpy.context, arm, resolution=0.010)
 walk = anim.create_motion(arm, "WALK")
 arm.animation_data.action = walk

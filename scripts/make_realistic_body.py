@@ -35,8 +35,8 @@ sys.path.insert(0, ROOT)
 import bpy  # noqa: E402
 import numpy as np  # noqa: E402
 
-import apex_rig  # noqa: E402
-from apex_rig import animation, export  # noqa: E402
+import surigandanim  # noqa: E402
+from surigandanim import animation, export  # noqa: E402
 
 from make_markie_apex import build_apex, export_mesh_only  # noqa: E402
 
@@ -171,7 +171,7 @@ def make_body(data: str, args):
 
 def main():
     args = parse_args(sys.argv)
-    apex_rig.register()
+    surigandanim.register()
     try:
         bpy.ops.wm.read_factory_settings(use_empty=True)
         ob = make_body(args.mh_data, args)
@@ -197,7 +197,7 @@ def main():
                           selection_only=False, bake_actions=True, deform_only=True)
         print("APEX", apex_path, flush=True)
     finally:
-        apex_rig.unregister()
+        surigandanim.unregister()
 
 
 if __name__ == "__main__":

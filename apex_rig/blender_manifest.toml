@@ -1,0 +1,19 @@
+schema_version = "1.0.0"
+
+id = "apex_rig"
+version = "1.1.0"
+name = "Apex Rig & Motion"
+tagline = "Advanced human control rig and procedural animation toolkit"
+maintainer = "Apex Tools"
+type = "add-on"
+
+blender_version_min = "5.2.0"
+blender_version_max = "5.3.0"
+
+license = ["SPDX:GPL-3.0-or-later"]
+website = "https://example.com/apex-rig"
+
+tags = ["Rigging", "Animation"]
+
+[permissions]
+files = "Import and export character files (glTF / FBX / BVH)"

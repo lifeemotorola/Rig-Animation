@@ -99,6 +99,9 @@ move.
 * **Realistic Body (MakeHuman)** – the only body source in the add-on. Builds an adult CC0 body
   (male, female, athletic, heavier, or custom gender / muscle / weight), fits the Apex rig to it,
   and skins it. The procedural mannequin has been removed.
+* **Detect Body Parts** – labels every skinned vertex as head, torso, arm, hand, leg or foot from
+  its dominant bone, and writes `APEX_part_*` vertex groups plus a per-part count. Use it as a
+  mask for painting, hiding or export.
 
 ### 4.1 Deformation toolkit (new)
 

@@ -8,7 +8,7 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, StringProperty
 from bpy.types import Operator
 
-from . import (animation, deform, export, face, fit, live, makehuman, mocap, poses,
+from . import (animation, body_parts, deform, export, face, fit, live, makehuman, mocap, poses,
                properties, rig as rigmod, skin, ui_icons, utils)
 from .const import MOTIONS, PROPS, WALK_PRESETS
 
@@ -613,6 +613,29 @@ class APEX_OT_unbind_meshes(_ApexOp):
         return {"FINISHED"}
 
 
+class APEX_OT_detect_parts(_ApexOp):
+    bl_idname = "apex.detect_parts"
+    bl_label = "Detect Body Parts"
+    bl_description = ("Label every skinned vertex as head, torso, arm, hand, leg or foot "
+                      "(APEX_part_* vertex groups) from its dominant bone")
+
+    def execute(self, context):
+        rig = _rig_from_context(context)
+        if rig is None:
+            return {"CANCELLED"}
+        meshes = _selected_meshes(context) or utils.meshes_of_armature(rig.obj)
+        meshes = [ob for ob in meshes if not (ob.get("apex_eye") or ob.get("apex_mouth"))]
+        if not meshes:
+            self.report({"WARNING"}, "No skinned meshes found")
+            return {"CANCELLED"}
+        for ob in meshes:
+            counts = body_parts.apply(ob, rig.obj)
+            lines = body_parts.report_lines(counts)
+            utils.log.info("%s body parts:\n%s", ob.name, "\n".join(lines))
+        self.report({"INFO"}, f"Labelled body parts on {len(meshes)} mesh(es)")
+        return {"FINISHED"}
+
+
 class APEX_OT_weight_report(_ApexOp):
     bl_idname = "apex.weight_report"
     bl_label = "Check Weights"
@@ -1169,6 +1192,7 @@ CLASSES = (
     APEX_OT_skin_selected,
     APEX_OT_unbind_meshes,
     APEX_OT_weight_report,
+    APEX_OT_detect_parts,
     APEX_OT_snap,
     APEX_OT_toggle_ik,
     APEX_OT_mirror_pose,

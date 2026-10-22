@@ -275,6 +275,7 @@ class APEX_PT_skin(APEX_PT_base, Panel):
         col.operator("apex.skin_selected", text="Skin Selected Meshes",
                      icon="MOD_VERTEX_WEIGHT")
         col.operator("apex.weight_report", text="Validate Weights", icon="CHECKMARK")
+        col.operator("apex.detect_parts", text="Detect Body Parts", icon="OUTLINER_OB_GROUP_INSTANCE")
         col.operator("apex.unbind_meshes", icon="X")
 
         box = layout.box()

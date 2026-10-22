@@ -25,8 +25,12 @@ import hashlib
 import json
 import math
 import os
+import re
 import socket
+import ssl
 import struct
+import subprocess
+import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -75,9 +79,55 @@ def local_ip() -> str:
         probe.close()
 
 
+# Browsers only expose the camera (getUserMedia) on secure pages.  A phone
+# opening http://<LAN-IP>:port is NOT a secure page, so the camera silently
+# fails.  The server therefore speaks HTTPS with a self-signed certificate
+# generated locally (needs the openssl command); the phone accepts it once.
+TLS_STATE = {"ip": "", "ctx": None, "der": b""}
+
+
+def _tls_material(ip: str):
+    """Create (or reuse) a self-signed certificate for *ip*. Returns paths."""
+    base = os.path.join(tempfile.gettempdir(), "apex_live_tls")
+    os.makedirs(base, exist_ok=True)
+    safe = re.sub(r"[^0-9A-Za-z.]", "_", ip)
+    cert = os.path.join(base, f"cert_{safe}.pem")
+    key = os.path.join(base, f"key_{safe}.pem")
+    if not (os.path.exists(cert) and os.path.exists(key)):
+        subprocess.run(
+            ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
+             "-keyout", key, "-out", cert, "-days", "825",
+             "-subj", "/CN=Apex Live Mocap",
+             "-addext", f"subjectAltName=IP:{ip},IP:127.0.0.1,DNS:localhost"],
+            check=True, capture_output=True, timeout=60)
+    return cert, key
+
+
+def _tls_context(ip: str):
+    """Server-side SSL context for *ip*, or None when TLS is unavailable."""
+    if TLS_STATE["ctx"] is not None and TLS_STATE["ip"] == ip:
+        return TLS_STATE["ctx"]
+    try:
+        cert, key = _tls_material(ip)
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.load_cert_chain(cert, key)
+        with open(cert, "rb") as fh:
+            pem = fh.read().decode("ascii")
+        TLS_STATE.update(ip=ip, ctx=ctx, der=ssl.PEM_cert_to_DER_cert(pem))
+        return ctx
+    except Exception as exc:          # no openssl, or unwritable temp dir
+        utils.log.warning("live mocap: HTTPS unavailable (%s); using http", exc)
+        return None
+
+
+def scheme_for(ip: str) -> str:
+    return "https" if _tls_context(ip) is not None else "http"
+
+
 def server_url(port: int | None = None, token: str = "") -> str:
     port = port or bpy.context.scene.apex_settings.live_port
-    url = f"http://{local_ip()}:{int(port)}/"
+    ip = local_ip()
+    url = f"{scheme_for(ip)}://{ip}:{int(port)}/"
     if token:
         url += f"?t={token}"
     return url
@@ -145,6 +195,14 @@ class _Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if path == "/cert":            # install this once on the phone if needed
+            body = TLS_STATE["der"]
+            self.send_response(200 if body else 404)
+            self.send_header("Content-Type", "application/x-x509-ca-cert")
+            self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
             return
@@ -258,6 +316,10 @@ class LiveServer:
         })
         self.httpd = ThreadingHTTPServer((self.host, self.port), handler)
         self.httpd.daemon_threads = True
+        ctx = _tls_context(local_ip())
+        if ctx is not None:
+            self.httpd.socket = ctx.wrap_socket(self.httpd.socket, server_side=True,
+                                                    do_handshake_on_connect=False)
         STATE["server"] = self
         self.thread = threading.Thread(target=self.httpd.serve_forever,
                                        name="ApexLiveHTTP", daemon=True)
@@ -649,6 +711,12 @@ connect();
 
 // ---------- camera ----------
 async function startCamera(){
+  if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    throw new Error('The browser blocked the camera because this page is not secure (plain http). '
+      + 'Open the https:// address shown in Blender, tap "Advanced" then "Proceed", '
+      + 'and make sure the link starts with https://. If it still fails, install the certificate from '
+      + location.origin + '/cert and try again.');
+  }
   const stream = await navigator.mediaDevices.getUserMedia({
     video: {facingMode:'user', width:{ideal:640}, height:{ideal:480}, frameRate:{ideal:30}},
     audio: false

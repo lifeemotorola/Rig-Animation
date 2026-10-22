@@ -96,9 +96,12 @@ move.
   geometry** — no finger tip, toe or clavicle is ever left without weights.
 * **Bone Heat** and **Bone Envelopes** – Blender's solvers with automatic 4-influence cleanup and
   normalisation.
-* **Add Mannequin Body** – generates a single-shell stylised body from the skeleton (voxel remesh +
-  smoothing, ≈1 s) and skins it automatically: ~8 400 verts, **0 unweighted, 0 over-4,
-  0 unnormalised**, 0 bones without weights.
+* **Realistic Body (MakeHuman)** – the only body source in the add-on. Builds an adult CC0 body
+  (male, female, athletic, heavier, or custom gender / muscle / weight), fits the Apex rig to it,
+  and skins it. The procedural mannequin has been removed.
+* **Detect Body Parts** – labels every skinned vertex as head, torso, arm, hand, leg or foot from
+  its dominant bone, and writes `APEX_part_*` vertex groups plus a per-part count. Use it as a
+  mask for painting, hiding or export.
 
 ### 4.1 Deformation toolkit (new)
 
@@ -188,7 +191,7 @@ through `bpy.utils.previews`; in a normal (GL) Blender session each tile is a cl
 and in background/headless mode the same grid degrades automatically to labelled buttons, so the
 UI never breaks.
 
-Regenerate the thumbnails after changing proportions or the mannequin:
+Regenerate the thumbnails after changing proportions or the body:
 
 ```bash
 blender -b --factory-startup --python scripts/make_previews.py   # ~40 s, Cycles CPU
@@ -256,7 +259,6 @@ apex_rig/
   rig.py             rig builder, IK/pole calibration, drivers, Rig runtime API
   widgets.py         procedural custom-shape meshes
   skin.py            capsule / bone-heat / envelope skinning + validation
-  skin_body.py       procedural mannequin body (voxel remesh + subsurf)
   fit.py             character measurement, proportion solver, placement
   animation.py       motion library, bake, mirror, NLA helpers
   poses.py           posing primitives + 10-pose library

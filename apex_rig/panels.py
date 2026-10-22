@@ -108,6 +108,29 @@ class APEX_PT_body(APEX_PT_base, Panel):
         if not icon_ok:
             box.label(text="(thumbnails appear in the Blender UI)", icon="INFO")
 
+        # ---- realistic adult body (MakeHuman CC0 data) ----------------
+        rbox = layout.box()
+        rbox.label(text="Realistic Body (MakeHuman)", icon="USER")
+        from .makehuman import PRESETS as REAL
+        real_items = [(k, v[0]) for k, v in REAL.items() if k != "REAL_CUSTOM"]
+        if ui_icons.icon_id("body", "REAL_MALE") != 0:
+            ui_icons.picture_grid(
+                rbox, "apex.build_realistic", real_items, "body", columns=4,
+                props_for=lambda key: {"preset": key})
+        else:
+            grid = rbox.grid_flow(columns=2, align=True)
+            for key, label in real_items:
+                op = grid.operator("apex.build_realistic", text=label)
+                op.preset = key
+        sub = rbox.column(align=True)
+        sub.prop(st, "rb_gender", slider=True)
+        sub.prop(st, "rb_muscle", slider=True)
+        sub.prop(st, "rb_weight", slider=True)
+        op = sub.operator("apex.build_realistic", text="Build Custom Body", icon="ARMATURE_DATA")
+        op.preset = "REAL_CUSTOM"
+        if st.detected_fit:
+            rbox.label(text=f"Fit: {st.detected_fit}", icon="CHECKMARK")
+
         col = layout.column(align=True)
         col.label(text="Proportions", icon="TOOL_SETTINGS")
         col.prop(st, "height")
@@ -339,6 +362,10 @@ class APEX_PT_animation(APEX_PT_base, Panel):
             for key, label in items:
                 op = grid.operator("apex.add_motion_pick", text=label)
                 op.motion = key
+
+        pv = layout.row()
+        pv.scale_y = 1.2
+        pv.operator("apex.preview_motion", text="Preview Motion", icon="PLAY")
 
         col = layout.column(align=True)
         row = col.row(align=True)

@@ -289,7 +289,36 @@ def measure_mesh(meshes, facing_pref: str = "AUTO") -> CharacterInfo:
         info.leg_len = float(min(max(crotch_frac / DEFAULT_CROTCH_FRAC, 0.85), 1.15))
     else:
         info.warnings.append("Could not locate the crotch - leg length left at 1.0")
+
+    # --- arm length from the wingspan -----------------------------------
+    # The hands are the lateral extremes of the body. Solve arm_len so the
+    # wrists (rig hand joints) end one hand length short of the fingertips.
+    arms = local[local[:, 2] > z_min + 0.45 * height]
+    if len(arms) > 200:
+        reach = float(np.percentile(np.abs(arms[:, 0] - cx), 99.5))
+        arm_len = _solve_arm_len(height, arm_angle, reach - 0.07 * height)
+        if arm_len is not None:
+            info.profile["arm_len"] = arm_len
     return info
+
+
+def _solve_arm_len(height: float, arm_angle: float, wrist_reach: float):
+    """arm_len that puts the rig's wrist this far from the body axis."""
+    from .proportions import HumanProportions, RigOptions
+
+    def hand_x(arm_len: float) -> float:
+        opts = RigOptions.from_preset("CUSTOM", height=height, arm_angle=arm_angle,
+                                      arm_len=arm_len)
+        props = HumanProportions(opts)
+        heads = {spec.name: spec.head for spec in props.specs}
+        return abs(float(heads["hand.L"][0]))
+
+    x1, x2 = hand_x(0.5), hand_x(1.5)
+    if abs(x2 - x1) < 1e-6:
+        return None
+    slope = (x2 - x1) / 1.0
+    arm_len = 0.5 + (wrist_reach - x1) / slope
+    return float(min(max(arm_len, 0.7), 1.4))
 
 
 # ---------------------------------------------------------------------------

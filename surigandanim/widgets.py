@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - procedural custom-shape (widget) library.
+"""SuRigandAnim - procedural custom-shape (widget) library.
 
 Widgets are generated as edge-only meshes so they behave like classic control
 curves in the viewport.  Geometry is authored in bone space (Y = along bone)

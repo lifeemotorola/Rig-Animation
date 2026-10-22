@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - constant data.
+"""SuRigandAnim - constant data.
 
 Everything user-visible (names, palettes, presets, motion catalogue) lives here
 so the rest of the code stays declarative.
 """
 from __future__ import annotations
 
-ADDON_NAME = "Apex Rig & Motion"
-ADDON_ID = "apex_rig"
-VERSION = (1, 0, 0)
-VERSION_STRING = "1.2.0"
+ADDON_NAME = "SuRigandAnim"
+ADDON_ID = "surigandanim"
+VERSION = (1, 3, 0)
+VERSION_STRING = "1.3.0"
 
-RIG_ID_KEY = "apex_rig"          # marks an armature as an Apex rig
+RIG_ID_KEY = "apex_rig"  # stored in saved scenes; kept so existing rigs are still detected
 RIG_VERSION_KEY = "apex_version"
 PROPS_BONE = "root"              # bone that stores all animator-facing properties
 NAME_MAP_KEY = "apex_name_map"   # json canonical -> current bone name (after renaming)

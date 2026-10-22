@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0,'/home/user')
 import bpy
-from apex_rig import rig as rigmod
-from apex_rig.proportions import RigOptions
+from surigandanim import rig as rigmod
+from surigandanim.proportions import RigOptions
 from mathutils import Vector
 
 for prop in ("lock_ik_x","ik_stretch","use_ik_linear_control","ik_linear_weight","use_ik_limit_x"):

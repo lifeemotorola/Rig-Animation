@@ -2,9 +2,9 @@ import sys
 sys.path.insert(0,'/home/user')
 import bpy, numpy as np
 from mathutils import Vector
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, skin, utils, properties, fit
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, skin, utils, properties, fit
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 # character with DIFFERENT proportions than the rig (thicker fingers/hands, bigger head)

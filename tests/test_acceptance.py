@@ -2,9 +2,9 @@ import sys, math, time
 sys.path.insert(0,'/home/user')
 import bpy
 from mathutils import Vector
-import apex_rig
-from apex_rig import rig as rigmod, utils, const
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, utils, const
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 arm = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm
 R = rigmod.Rig(arm)
@@ -60,7 +60,7 @@ print("5 mirror L->R", tuple(round(v,3) for v in hl), tuple(round(v,3) for v in 
 bpy.ops.apex.reset_pose()
 
 # 6 walk quality
-from apex_rig import animation as anim
+from surigandanim import animation as anim
 walk = anim.create_motion(arm, "WALK")
 arm.animation_data.action = walk
 try: arm.animation_data.action_slot = walk.slots[0]
@@ -86,7 +86,7 @@ print("7 pelvis stable during leg IK:", round((p1-p0).length,5), ok((p1-p0).leng
 
 # 8 handles/manifests
 import os
-man = open('/home/user/apex_rig/blender_manifest.toml').read()
-print("8 manifest", ok('blender_version_min = "5.2.0"' in man and 'id = "apex_rig"' in man), flush=True)
-src = open('/home/user/apex_rig/__init__.py').read()
+man = open('/home/user/surigandanim/blender_manifest.toml').read()
+print("8 manifest", ok('blender_version_min = "5.2.0"' in man and 'id = "surigandanim"' in man), flush=True)
+src = open('/home/user/surigandanim/__init__.py').read()
 print("8 no bl_info assignment", ok('bl_info =' not in src and '__package__' not in src), flush=True)

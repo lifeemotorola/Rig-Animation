@@ -30,8 +30,8 @@ sys.path.insert(0, ROOT)
 
 import bpy  # noqa: E402
 
-import apex_rig  # noqa: E402
-from apex_rig import animation, export, fit, properties, utils  # noqa: E402
+import surigandanim  # noqa: E402
+from surigandanim import animation, export, fit, properties, utils  # noqa: E402
 
 
 def parse_args(argv):
@@ -103,7 +103,7 @@ def build_apex(context, meshes):
 
 def main():
     args = parse_args(sys.argv)
-    apex_rig.register()
+    surigandanim.register()
     try:
         meshes = import_source(args.source)
         if not meshes:
@@ -132,7 +132,7 @@ def main():
                           deform_only=True)
         print("APEX", args.apex_out, flush=True)
     finally:
-        apex_rig.unregister()
+        surigandanim.unregister()
 
 
 if __name__ == "__main__":

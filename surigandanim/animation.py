@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - procedural animation engine.
+"""SuRigandAnim - procedural animation engine.
 
 Every motion is created the way an animator would do it: a handful of pose
 keys on the *controls* (cog, ik feet, hands, torso bones and the root custom
@@ -159,7 +159,7 @@ def _finish(arm, action, slot, loop: bool, smooth: bool = True):
             pass
     try:
         action.asset_mark()
-        action.asset_data.description = "Apex Rig & Motion procedural action"
+        action.asset_data.description = "SuRigandAnim procedural action"
     except Exception:
         pass
     arm.animation_data.action = action

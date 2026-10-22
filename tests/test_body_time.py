@@ -1,9 +1,9 @@
 import sys, time
 sys.path.insert(0,'/home/user')
 import bpy
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, skin
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, skin
+surigandanim.register()
 for voxel in (0.0192, 0.024, 0.030):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     arm = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm

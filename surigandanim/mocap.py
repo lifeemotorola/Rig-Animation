@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - motion capture import and retargeting.
+"""SuRigandAnim - motion capture import and retargeting.
 
 The retargeter is name-first, position-fallback:
 

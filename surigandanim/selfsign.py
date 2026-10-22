@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - self-signed certificate for the live mocap server.
+"""SuRigandAnim - self-signed certificate for the live mocap server.
 
 Browsers only give a web page the camera on a secure (HTTPS) origin, so the
 phone needs an HTTPS address.  Blender on Windows and macOS does not ship the

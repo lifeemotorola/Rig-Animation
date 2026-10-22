@@ -5,8 +5,8 @@ Run head-less (Blender 5.2 LTS, Cycles CPU):
 
     blender -b --factory-startup --python scripts/make_body_previews.py
 
-Writes ``apex_rig/previews/body_<KEY>.png`` (160 x 220) for every entry of
-``apex_rig.makehuman.PRESETS``. Re-run after changing the body data.
+Writes ``surigandanim/previews/body_<KEY>.png`` (160 x 220) for every entry of
+``surigandanim.makehuman.PRESETS``. Re-run after changing the body data.
 """
 from __future__ import annotations
 
@@ -19,10 +19,10 @@ sys.path.insert(0, ROOT)
 import bpy  # noqa: E402
 from mathutils import Vector  # noqa: E402
 
-import apex_rig  # noqa: E402
-from apex_rig import makehuman  # noqa: E402
+import surigandanim  # noqa: E402
+from surigandanim import makehuman  # noqa: E402
 
-OUT_DIR = os.path.join(ROOT, "apex_rig", "previews")
+OUT_DIR = os.path.join(ROOT, "surigandanim", "previews")
 RES_X, RES_Y = 160, 220
 
 
@@ -42,7 +42,7 @@ def _frame_camera(ob):
 
 
 def main():
-    apex_rig.register()
+    surigandanim.register()
     try:
         for key in makehuman.PRESETS:
             if key == "REAL_CUSTOM":
@@ -67,7 +67,7 @@ def main():
             bpy.ops.render.render(write_still=True)
             print("PREVIEW", scene.render.filepath, flush=True)
     finally:
-        apex_rig.unregister()
+        surigandanim.unregister()
 
 
 if __name__ == "__main__":

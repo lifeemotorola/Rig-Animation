@@ -1,6 +1,6 @@
 import bpy, os
-bpy.ops.preferences.addon_enable(module="bl_ext.user_default.apex_rig")
-from bl_ext.user_default.apex_rig import (rig as rigmod, skin_body, deform, poses,
+bpy.ops.preferences.addon_enable(module="bl_ext.user_default.surigandanim")
+from bl_ext.user_default.surigandanim import (rig as rigmod, skin_body, deform, poses,
                                            animation as anim, properties, ui_icons, fit)
 print("extension:", rigname := rigmod.RIG_NAME if hasattr(rigmod,'RIG_NAME') else "apex", flush=True)
 bpy.ops.wm.read_homefile(use_empty=True)

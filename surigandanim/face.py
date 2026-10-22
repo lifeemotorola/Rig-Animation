@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - facial rig.
+"""SuRigandAnim - facial rig.
 
 A production-style FACS-ish face built on top of the Apex skeleton:
 

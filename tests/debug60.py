@@ -2,9 +2,9 @@ import sys, math, time
 sys.path.insert(0,'/home/user')
 import bpy, numpy as np, mathutils
 from mathutils import Euler, Vector
-import apex_rig
-from apex_rig import rig as rigmod, fit, properties
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, fit, properties
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 # ground truth: HEROIC rig rendered at world scale 1.15 and rotated -25 deg
 res = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("HEROIC"), replace=True)
@@ -14,7 +14,7 @@ X = (mathutils.Matrix.Translation(Vector((-2.5,4.0,0.2)))
      @ mathutils.Matrix.Diagonal((1.15,1.15,1.15,1.0)))
 lm = fit._match_landmarks(src)
 targets = {k: X @ b.head_local for k,b in lm.items()}
-from apex_rig.proportions import RigOptions
+from surigandanim.proportions import RigOptions
 base = RigOptions.from_preset("CUSTOM", height=1.92*1.15, arm_angle=40, leg_len=1.02)
 t0=time.time()
 prof, (R,t), err = fit.solve_profile(targets, base)

@@ -1,7 +1,7 @@
 import bpy, math, time, sys
 import mathutils
 from mathutils import Euler, Vector
-from bl_ext.user_default.apex_rig import rig as rigmod, skin_body, utils, properties, fit, animation
+from bl_ext.user_default.surigandanim import rig as rigmod, skin_body, utils, properties, fit, animation
 
 bpy.ops.wm.read_homefile(use_empty=True)
 st = properties.settings(bpy.context)
@@ -9,7 +9,7 @@ st = properties.settings(bpy.context)
 # ---- simulate a user's character: rigged with a Mixamo skeleton, rotated & scaled
 src = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm
 body = skin_body.add_mannequin(bpy.context, src, resolution=0.016)
-from bl_ext.user_default.apex_rig import mocap
+from bl_ext.user_default.surigandanim import mocap
 mocap.rename_to_style(rigmod.Rig(src), "MIXAMO")
 X = (mathutils.Matrix.Translation(Vector((1.5, -2.5, 0.3)))
      @ Euler((0,0,math.radians(65))).to_matrix().to_4x4()
@@ -32,7 +32,7 @@ arm = bpy.context.view_layer.objects.active
 print("new rig:", arm.name, len(arm.data.bones), "at", tuple(round(v,2) for v in arm.location),
       "rot", round(math.degrees(arm.rotation_quaternion.to_euler().z),1), flush=True)
 import bpy as _b
-print("apex rigs in scene:", [o.name for o in _b.data.objects if utils.is_apex_rig(o)], flush=True)
+print("apex rigs in scene:", [o.name for o in _b.data.objects if utils.is_surigandanim(o)], flush=True)
 print("armatures in scene:", [o.name for o in _b.data.objects if o.type=='ARMATURE'], flush=True)
 bound = utils.meshes_of_armature(arm)
 print("bound meshes:", [o.name for o in bound], flush=True)

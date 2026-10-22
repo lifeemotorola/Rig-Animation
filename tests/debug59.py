@@ -2,9 +2,9 @@ import sys, math
 sys.path.insert(0,'/home/user')
 import bpy, numpy as np
 from mathutils import Vector
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, fit, utils
-apex_rig.register()
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, fit, utils
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 arm = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("MALE"), replace=True).arm
 body = skin_body.add_mannequin(bpy.context, arm, resolution=0.014)

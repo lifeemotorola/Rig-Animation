@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - live mocap over WiFi.
+"""SuRigandAnim - live mocap over WiFi.
 
 Blender runs a tiny web server.  You open the printed address on your phone
 (camera, same WiFi), and the phone drives the rig live:
@@ -281,7 +281,7 @@ class _Handler(BaseHTTPRequestHandler):
 
 def _rig_name() -> str:
     for ob in bpy.data.objects:
-        if ob.type == "ARMATURE" and utils.is_apex_rig(ob):
+        if ob.type == "ARMATURE" and utils.is_surigandanim(ob):
             return ob.name
     return ""
 

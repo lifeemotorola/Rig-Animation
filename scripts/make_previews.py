@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Generate the preview thumbnails shipped with Apex Rig & Motion.
+"""Generate the preview thumbnails shipped with SuRigandAnim.
 
 Run head-less:
 
     blender -b --factory-startup --python scripts/make_previews.py
 
-Writes ``apex_rig/previews/<kind>_<KEY>.png`` (160 x 220) for every body preset
+Writes ``surigandanim/previews/<kind>_<KEY>.png`` (160 x 220) for every body preset
 and every motion, so the panel can offer picture buttons instead of text menus.
 """
 from __future__ import annotations
@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import bpy
 from mathutils import Vector
 
-import apex_rig
-from apex_rig import animation, const, rig as rigmod, skin_body, utils
+import surigandanim
+from surigandanim import animation, const, rig as rigmod, skin_body, utils
 
 OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                       "apex_rig", "previews")
+                       "surigandanim", "previews")
 RES_X, RES_Y = 160, 220
 
 
@@ -195,7 +195,7 @@ def render_motions(context, camera):
 
 def render_poses(context, camera):
     out = []
-    from apex_rig import poses as pose_lib
+    from surigandanim import poses as pose_lib
 
     for key, (label, _fn) in pose_lib.POSE_LIBRARY.items():
         bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -216,7 +216,7 @@ def render_poses(context, camera):
 
 
 def render_skin_methods(context, camera):
-    from apex_rig import deform, skin
+    from surigandanim import deform, skin
 
     out = []
     for method in ("APEX", "CAPSULE", "HEAT", "ENVELOPE"):
@@ -260,7 +260,7 @@ def render_skin_methods(context, camera):
 
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
-    apex_rig.register()
+    surigandanim.register()
     camera = _setup_scene(bpy.context)
     presets = render_presets(bpy.context, camera)
     motions = render_motions(bpy.context, camera)

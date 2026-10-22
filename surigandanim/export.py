@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - game-engine export.
+"""SuRigandAnim - game-engine export.
 
 Thin, future-proof wrappers around the glTF and FBX exporters.  Keyword
 arguments are filtered against the operator's RNA so the add-on keeps working

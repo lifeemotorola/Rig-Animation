@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - rig builder and runtime API.
+"""SuRigandAnim - rig builder and runtime API.
 
-``build_rig`` turns a :class:`~apex_rig.proportions.RigOptions` into a fully
+``build_rig`` turns a :class:`~surigandanim.proportions.RigOptions` into a fully
 constrained, colour-coded and widget-driven human armature.  The :class:`Rig`
 wrapper is the stable runtime interface used by every other module (rename
 safe, side aware).
@@ -479,7 +479,7 @@ def _mark_asset(arm) -> None:
     try:
         if not arm.asset_data:
             arm.asset_mark()
-            arm.asset_data.description = "Apex Rig & Motion human control rig"
+            arm.asset_data.description = "SuRigandAnim human control rig"
         try:
             arm.asset_data.tags.new("Apex Rig")
             arm.asset_data.tags.new("Humanoid")
@@ -508,7 +508,7 @@ def delete_rig(arm, remove_meshes_bindings: bool = True) -> None:
 def build_rig(context, opts: RigOptions, name: str = RIG_NAME,
               replace: bool = True) -> BuildResult:
     utils.ensure_object_mode()
-    existing = [ob for ob in bpy.data.objects if utils.is_apex_rig(ob)]
+    existing = [ob for ob in bpy.data.objects if utils.is_surigandanim(ob)]
     if existing and replace:
         bpy.ops.object.select_all(action="DESELECT")
         for ob in existing:
@@ -793,9 +793,9 @@ def get_rig(obj=None) -> Rig | None:
         obj = utils.active_armature(require_apex=True)
     if obj is None:
         for candidate in bpy.data.objects:
-            if utils.is_apex_rig(candidate):
+            if utils.is_surigandanim(candidate):
                 return Rig(candidate)
         return None
-    if not utils.is_apex_rig(obj):
+    if not utils.is_surigandanim(obj):
         return None
     return Rig(obj)

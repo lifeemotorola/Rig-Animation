@@ -1,11 +1,11 @@
 import sys, os
 sys.path.insert(0,'/home/user')
 import bpy
-import apex_rig
-from apex_rig import const
+import surigandanim
+from surigandanim import const
 
-apex_rig.register()
-print("registered", apex_rig.__version__, flush=True)
+surigandanim.register()
+print("registered", surigandanim.__version__, flush=True)
 print("operator:", hasattr(bpy.ops.apex, "build_rig"), flush=True)
 
 bpy.ops.wm.read_factory_settings(use_empty=True)

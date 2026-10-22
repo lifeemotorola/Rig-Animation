@@ -2,10 +2,10 @@ import sys, time
 sys.path.insert(0,'/home/user')
 import bpy, numpy as np
 from mathutils import Vector
-import apex_rig
-from apex_rig import (rig as rigmod, skin_body, skin, deform, poses, animation as anim,
+import surigandanim
+from surigandanim import (rig as rigmod, skin_body, skin, deform, poses, animation as anim,
                       fit, properties, utils, ui_icons)
-apex_rig.register()
+surigandanim.register()
 ok = lambda c: "PASS" if c else "FAIL"
 bpy.ops.wm.read_factory_settings(use_empty=True)
 st = properties.settings(bpy.context)

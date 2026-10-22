@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - user settings (scene property group)."""
+"""SuRigandAnim - user settings (scene property group)."""
 from __future__ import annotations
 
 import bpy

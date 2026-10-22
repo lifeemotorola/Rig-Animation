@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Apex Rig & Motion - preview thumbnails for picture buttons.
+"""SuRigandAnim - preview thumbnails for picture buttons.
 
 PNG previews live in ``<addon>/previews`` and are loaded through Blender's
 preview collection, which gives every image an ``icon_id`` usable by

@@ -1,10 +1,10 @@
 import sys, os, time
 sys.path.insert(0,'/home/user')
 import bpy
-import apex_rig
-from apex_rig import animation as anim, rig as rigmod, utils
+import surigandanim
+from surigandanim import animation as anim, rig as rigmod, utils
 
-apex_rig.register()
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 st = scene.apex_settings

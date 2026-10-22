@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0,'/home/user')
 import bpy
-from apex_rig import rig as rigmod, animation as anim, utils
+from surigandanim import rig as rigmod, animation as anim, utils
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 src = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("MALE"), name="Src", replace=True).arm

@@ -2,10 +2,10 @@ import sys, math
 sys.path.insert(0,'/home/user')
 import bpy, mathutils
 from mathutils import Euler, Vector
-import apex_rig
-from apex_rig import rig as rigmod, skin_body, utils, properties, fit, animation as anim
+import surigandanim
+from surigandanim import rig as rigmod, skin_body, utils, properties, fit, animation as anim
 
-apex_rig.register()
+surigandanim.register()
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 scene.render.engine = 'CYCLES'; scene.cycles.device='CPU'; scene.cycles.samples=40
@@ -16,7 +16,7 @@ scene.view_settings.look = 'AgX - Medium High Contrast' if 'AgX - Medium High Co
 # 1) a pre-existing character: own transform, own (foreign) skeleton
 src = rigmod.build_rig(bpy.context, rigmod.RigOptions.from_preset("FEMALE"), replace=True).arm
 body = skin_body.add_mannequin(bpy.context, src, resolution=0.012)
-from apex_rig import mocap
+from surigandanim import mocap
 mocap.rename_to_style(rigmod.Rig(src), "MIXAMO")
 X = (mathutils.Matrix.Translation(Vector((0.0, 0.0, 0.0)))
      @ Euler((0,0,math.radians(35))).to_matrix().to_4x4())

@@ -266,12 +266,52 @@ class APEX_PT_controls(APEX_PT_base, Panel):
                     op.limb = limb
                     op.side = side
 
+
+
+# ---------------------------------------------------------------------------
+# 4b. Layers & picker (BlenRig-style bone layers and region picker)
+# ---------------------------------------------------------------------------
+class APEX_PT_layers(APEX_PT_base, Panel):
+    bl_label = "Layers & Picker"
+    bl_idname = "APEX_PT_layers"
+
+    @classmethod
+    def poll(cls, context):
+        return rigmod.get_rig() is not None
+
+    def draw(self, context):
+        from . import layers
+        layout = self.layout
+        rig = rigmod.get_rig()
+        arm = rig.obj
+
         box = layout.box()
-        box.label(text="Bone Collections", icon="GROUP_BONE")
-        for coll in rig.obj.data.collections:
+        box.label(text="Pick a body region", icon="RESTRICT_SELECT_OFF")
+        grid = box.grid_flow(columns=2, align=True)
+        for key, label, _side, _prefixes in layers.REGIONS:
+            op = grid.operator("apex.pick_region", text=label)
+            op.region = key
+
+        box = layout.box()
+        box.label(text="Layers", icon="GROUP_BONE")
+        row = box.row(align=True)
+        row.operator("apex.layers_visibility", text="Show All").visible = True
+        row.operator("apex.layers_visibility", text="Hide All").visible = False
+        for coll in arm.data.collections:
             row = box.row(align=True)
-            row.prop(coll, "is_visible", text=coll.name, emboss=False,
-                     icon="HIDE_OFF" if coll.is_visible else "HIDE_ON")
+            row.prop(coll, "is_visible", text="", icon="HIDE_OFF" if coll.is_visible else "HIDE_ON",
+                     emboss=False)
+            row.label(text=coll.name, icon="LOCKED" if coll.name in layers.BUILTIN_LAYERS else "BLANK1")
+            op = row.operator("apex.layer_solo", text="", icon="RADIOBUT_ON")
+            op.layer = coll.name
+            op = row.operator("apex.layer_assign", text="", icon="ADD")
+            op.layer = coll.name
+            if coll.name not in layers.BUILTIN_LAYERS:
+                op = row.operator("apex.layer_remove", text="", icon="X")
+                op.layer = coll.name
+        row = box.row(align=True)
+        row.operator("apex.layer_add", text="Add Layer", icon="PLUS")
+        row.label(text="Select bones, then + to move them", icon="INFO")
 
 
 # ---------------------------------------------------------------------------
@@ -558,13 +598,14 @@ _CHILDREN = (
     (APEX_PT_character, 1, False),
     (APEX_PT_body, 2, False),
     (APEX_PT_poses, 3, False),
-    (APEX_PT_controls, 4, True),
-    (APEX_PT_skin, 5, True),
-    (APEX_PT_face, 6, True),
-    (APEX_PT_animation, 7, False),
-    (APEX_PT_retarget, 8, True),
-    (APEX_PT_live, 9, True),
-    (APEX_PT_export, 10, True),
+    (APEX_PT_layers, 4, False),
+    (APEX_PT_controls, 5, True),
+    (APEX_PT_skin, 6, True),
+    (APEX_PT_face, 7, True),
+    (APEX_PT_animation, 8, False),
+    (APEX_PT_retarget, 9, True),
+    (APEX_PT_live, 10, True),
+    (APEX_PT_export, 11, True),
 )
 for _cls, _order, _closed in _CHILDREN:
     _child(_cls, _order, closed=_closed)

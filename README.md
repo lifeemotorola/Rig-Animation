@@ -183,7 +183,9 @@ apex_character.glb  290 660 B   skins:1 (52 joints)  animations:5  meshes:1
 
 One root panel, **Apex Rig & Motion**, in the **Apex** tab (BlenRig-style layout) with
 nested sub-panels in order: `My Character` (fit to an existing mesh), `Body Presets`, `Poses`,
-`Controls`, `Skinning`, `Face`, `Animation`, `Mocap / Retarget`, `Live Mocap`, `Export`.
+`Layers & Picker`, `Controls`, `Skinning`, `Face`, `Animation`, `Mocap / Retarget`, `Live Mocap`, `Export`.
+
+**Layers & Picker** (BlenRig-style): the picker buttons select a whole region (Head, Torso, Arm L/R, Hand L/R, Leg L/R, Face) and show its layer. Layers are bone collections with a visibility eye, Solo, Show/Hide All, assign-selected (+), and Add/Remove. Built-in layers (Controls, Torso, Arms, Legs, Twists, Face) cannot be removed. BlenRig is GPL-3; see Credits.
 Setup and motion panels open by default; the secondary tools start collapsed.
 All build settings are live scene settings with descriptions, slider ranges and soft limits.
 

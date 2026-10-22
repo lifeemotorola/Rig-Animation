@@ -127,7 +127,6 @@ class APEX_PT_body(APEX_PT_base, Panel):
             grid.prop(st, name)
         col.prop(st, "twist_bones")
         col.prop(st, "bbone")
-        col.prop(st, "add_mannequin", text="Add Skinned Mannequin")
 
         big = layout.column(align=True)
         big.scale_y = 1.4
@@ -275,7 +274,6 @@ class APEX_PT_skin(APEX_PT_base, Panel):
         col.prop(st, "max_influences")
         col.operator("apex.skin_selected", text="Skin Selected Meshes",
                      icon="MOD_VERTEX_WEIGHT")
-        col.operator("apex.add_mannequin", icon="MESH_UVSPHERE")
         col.operator("apex.weight_report", text="Validate Weights", icon="CHECKMARK")
         col.operator("apex.unbind_meshes", icon="X")
 

@@ -9,8 +9,8 @@ from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty, St
 from bpy.types import Operator
 
 from . import (animation, deform, export, face, fit, live, makehuman, mocap, poses,
-               properties, rig as rigmod, skin, skin_body, ui_icons, utils)
-from .const import MOTIONS, PRESETS, PROPS, WALK_PRESETS
+               properties, rig as rigmod, skin, ui_icons, utils)
+from .const import MOTIONS, PROPS, WALK_PRESETS
 
 LIMB_ITEMS = (
     ("arm", "Arms", "Arms"),
@@ -79,12 +79,6 @@ class APEX_OT_build_rig(_ApexOp):
             utils.log.exception("build failed")
             return {"CANCELLED"}
         arm = result.arm
-        if st.add_mannequin:
-            try:
-                skin_body.add_mannequin(context, arm, resolution=st.mannequin_resolution)
-            except Exception as exc:
-                utils.log.exception("mannequin failed")
-                self.report({"WARNING"}, f"Rig built, body generation failed: {exc}")
         utils.set_active(arm)
         coll = arm.data.collections.get("Controls")
         if coll:
@@ -103,27 +97,6 @@ class APEX_OT_delete_rig(_ApexOp):
         if rig is None:
             return {"CANCELLED"}
         rigmod.delete_rig(rig.obj)
-        return {"FINISHED"}
-
-
-class APEX_OT_add_mannequin(_ApexOp):
-    bl_idname = "apex.add_mannequin"
-    bl_label = "Add Mannequin Body"
-    bl_description = "Generate and skin a stylised body mesh for the active rig"
-
-    def execute(self, context):
-        st = properties.settings(context)
-        rig = _rig_from_context(context)
-        if rig is None:
-            return {"CANCELLED"}
-        try:
-            body = skin_body.add_mannequin(context, rig.obj,
-                                           resolution=st.mannequin_resolution)
-        except Exception as exc:
-            utils.log.exception("mannequin failed")
-            self.report({"ERROR"}, f"Body generation failed: {exc}")
-            return {"CANCELLED"}
-        self.report({"INFO"}, f"Mannequin created ({len(body.data.vertices)} vertices)")
         return {"FINISHED"}
 
 
@@ -327,21 +300,6 @@ class APEX_OT_clear_pose_op(_ApexOp):
             return {"CANCELLED"}
         poses.clear_pose(rig.obj)
         return {"FINISHED"}
-
-
-class APEX_OT_build_preset(_ApexOp):
-    bl_idname = "apex.build_preset"
-    bl_label = "Build From Preset"
-    bl_description = "Build a new rig from a body preset"
-
-    preset: EnumProperty(items=[(k, v["label"], "") for k, v in PRESETS.items()],
-                         default="FEMALE")
-
-    def execute(self, context):
-        st = properties.settings(context)
-        properties.apply_preset(st, self.preset)
-        st.preset = self.preset
-        return bpy.ops.apex.build_rig()
 
 
 class APEX_OT_build_realistic(_ApexOp):
@@ -1194,11 +1152,9 @@ CLASSES = (
     APEX_OT_apply_preset,
     APEX_OT_build_rig,
     APEX_OT_delete_rig,
-    APEX_OT_add_mannequin,
     APEX_OT_apply_pose,
     APEX_OT_key_pose,
     APEX_OT_clear_pose_op,
-    APEX_OT_build_preset,
     APEX_OT_add_motion_pick,
     APEX_OT_preserve_volume,
     APEX_OT_corrective_smooth,

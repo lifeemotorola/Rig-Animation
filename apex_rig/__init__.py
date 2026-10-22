@@ -19,7 +19,6 @@ __APEX_MODULES = (
     "utils",
     "widgets",
     "skin",
-    "skin_body",
     "deform",
     "poses",
     "face",

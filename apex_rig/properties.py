@@ -72,11 +72,6 @@ class ApexSettings(PropertyGroup):
                                description="Add knee / elbow pole targets and calibrate them")
 
     # ------------------------------------------------------------- body + skin
-    add_mannequin: BoolProperty(name="Add Mannequin Body", default=True,
-                                description="Generate and skin a stylised body mesh")
-    mannequin_resolution: FloatProperty(name="Body Resolution", default=0.012,
-                                        min=0.004, max=0.06,
-                                        description="Metaball resolution (smaller = denser mesh)")
     skin_method: EnumProperty(name="Skinning", items=SKIN_ITEMS, default="APEX")
     smooth_iterations: IntProperty(name="Smooth Passes", default=4, min=0, max=20)
     max_influences: IntProperty(name="Max Influences", default=4, min=1, max=8)

@@ -379,24 +379,32 @@ def _setup_drivers(arm, opts: RigOptions) -> None:
     def from_prop(obj, path, index, prop_name, expr="c"):
         utils.drive_from_prop(obj, path, index, arm, props_bone, prop_name, expr)
 
+    def blend_ik(con, limb: str, side: str):
+        """IK influence = IK blend * (1 - MOCAP).  MOCAP mode turns IK off so the
+        FK keys from a mocap take over without IK and FK fighting each other."""
+        utils.add_driver(con, "influence", None, "c*(1-m)", [
+            ("c", arm, utils.prop_bone_path(props_bone, f"ik_{limb}.{side}")),
+            ("m", arm, utils.prop_bone_path(props_bone, f"mocap_{limb}.{side}")),
+        ])
+
     for side in SIDE:
         # IK / FK blend
         for con in arm.pose.bones[f"forearm.{side}"].constraints:
             if con.type == "IK" and con.name == CON_IK + " Arm":
-                from_prop(con, "influence", None, f"ik_arm.{side}")
+                blend_ik(con, "arm", side)
         for con in arm.pose.bones[f"shin.{side}"].constraints:
             if con.type == "IK" and con.name == CON_IK + " Leg":
-                from_prop(con, "influence", None, f"ik_leg.{side}")
+                blend_ik(con, "leg", side)
 
         # follow constraints
         for pb in arm.pose.bones:
             for con in pb.constraints:
                 if con.name.startswith(CON_FOLLOW) and con.type == "COPY_ROTATION":
                     if con.subtarget.endswith(f"hand_ik.{side}"):
-                        from_prop(con, "influence", None, f"ik_arm.{side}")
+                        blend_ik(con, "arm", side)
                     elif con.subtarget.endswith(f"foot_ik.{side}") or \
                             con.subtarget.endswith(f"toe_ik.{side}"):
-                        from_prop(con, "influence", None, f"ik_leg.{side}")
+                        blend_ik(con, "leg", side)
 
         # pole angle (stored in degrees for animator friendliness)
         if opts.pole_targets:

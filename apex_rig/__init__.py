@@ -32,6 +32,7 @@ __APEX_MODULES = (
     "rig",
     "properties",
     "operators",
+    "layers",
     "panels",
 )
 
@@ -49,10 +50,11 @@ def _reload_modules():
 
 
 def register():
-    from . import properties, operators, panels
+    from . import properties, operators, layers, panels
 
     properties.register()
     operators.register()
+    layers.register()
     panels.register()
     try:
         from . import ui_icons
@@ -68,11 +70,12 @@ def register():
 
 
 def unregister():
-    from . import operators, panels, properties
+    from . import layers, operators, panels, properties
 
     if _register_handlers in bpy.app.handlers.load_post:
         bpy.app.handlers.load_post.remove(_register_handlers)
     panels.unregister()
+    layers.unregister()
     operators.unregister()
     properties.unregister()
     try:

@@ -936,6 +936,24 @@ class APEX_OT_bake_controls(_ApexOp):
         return {"FINISHED"}
 
 
+class APEX_OT_bake_pose_mesh(_ApexOp):
+    bl_idname = "apex.bake_pose_mesh"
+    bl_label = "Bake Pose to Mesh"
+    bl_description = ("Freeze the current pose into new static meshes (armature "
+                      "modifier applied), BlenRig-style")
+
+    def execute(self, context):
+        rig = _rig_from_context(context)
+        if rig is None:
+            return {"CANCELLED"}
+        created = animation.bake_pose_to_mesh(context, rig.obj)
+        if not created:
+            self.report({"WARNING"}, "No skinned meshes to bake")
+            return {"CANCELLED"}
+        self.report({"INFO"}, f"Baked {len(created)} posed mesh(es)")
+        return {"FINISHED"}
+
+
 class APEX_OT_bake_animation(_ApexOp):
     bl_idname = "apex.bake_animation"
     bl_label = "Bake Action"
@@ -1207,6 +1225,7 @@ CLASSES = (
     APEX_OT_push_action_nla,
     APEX_OT_bake_controls,
     APEX_OT_bake_animation,
+    APEX_OT_bake_pose_mesh,
     APEX_OT_apply_name_map,
     APEX_OT_retarget,
     APEX_OT_export,

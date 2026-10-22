@@ -25,7 +25,30 @@ class APEX_PT_base:
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "Apex"
-    bl_options = {"DEFAULT_CLOSED"}
+    bl_options = set()
+
+
+class APEX_PT_general(APEX_PT_base, Panel):
+    """Root panel (BlenRig-style): every other Apex panel nests under it."""
+    bl_label = "Apex Rig & Motion"
+    bl_idname = "APEX_PT_general"
+
+    def draw(self, context):
+        layout = self.layout
+        rig = rigmod.get_rig()
+        _layout_header(layout, rig)
+        if rig is None:
+            layout.label(text="Start with My Character or a Realistic Body", icon="INFO")
+        else:
+            layout.label(text=f"Rig: {rig.obj.name}", icon="OUTLINER_OB_ARMATURE")
+
+
+def _child(cls, order, parent="APEX_PT_general", closed=False):
+    """Attach a section panel under the root with a fixed order."""
+    cls.bl_parent_id = parent
+    cls.bl_order = order
+    cls.bl_options = {"DEFAULT_CLOSED"} if closed else set()
+    return cls
 
 
 # ---------------------------------------------------------------------------
@@ -181,7 +204,6 @@ class APEX_PT_poses(APEX_PT_base, Panel):
 class APEX_PT_controls(APEX_PT_base, Panel):
     bl_label = "Controls"
     bl_idname = "APEX_PT_controls"
-    bl_options = {"DEFAULT_CLOSED"}
 
     @classmethod
     def poll(cls, context):
@@ -203,6 +225,9 @@ class APEX_PT_controls(APEX_PT_base, Panel):
                 prop = f"ik_{limb}.{side}"
                 if prop in pb.keys():
                     row.prop(pb, f'["{prop}"]', text=side, slider=True)
+                mprop = f"mocap_{limb}.{side}"
+                if mprop in pb.keys():
+                    row.prop(pb, f'["{mprop}"]', text="MOCAP", slider=True)
                 op = row.operator("apex.toggle_ik", text="", icon="FILE_REFRESH")
                 op.limb = limb
                 op.side = side
@@ -241,12 +266,52 @@ class APEX_PT_controls(APEX_PT_base, Panel):
                     op.limb = limb
                     op.side = side
 
+
+
+# ---------------------------------------------------------------------------
+# 4b. Layers & picker (BlenRig-style bone layers and region picker)
+# ---------------------------------------------------------------------------
+class APEX_PT_layers(APEX_PT_base, Panel):
+    bl_label = "Layers & Picker"
+    bl_idname = "APEX_PT_layers"
+
+    @classmethod
+    def poll(cls, context):
+        return rigmod.get_rig() is not None
+
+    def draw(self, context):
+        from . import layers
+        layout = self.layout
+        rig = rigmod.get_rig()
+        arm = rig.obj
+
         box = layout.box()
-        box.label(text="Bone Collections", icon="GROUP_BONE")
-        for coll in rig.obj.data.collections:
+        box.label(text="Pick a body region", icon="RESTRICT_SELECT_OFF")
+        grid = box.grid_flow(columns=2, align=True)
+        for key, label, _side, _prefixes in layers.REGIONS:
+            op = grid.operator("apex.pick_region", text=label)
+            op.region = key
+
+        box = layout.box()
+        box.label(text="Layers", icon="GROUP_BONE")
+        row = box.row(align=True)
+        row.operator("apex.layers_visibility", text="Show All").visible = True
+        row.operator("apex.layers_visibility", text="Hide All").visible = False
+        for coll in arm.data.collections:
             row = box.row(align=True)
-            row.prop(coll, "is_visible", text=coll.name, emboss=False,
-                     icon="HIDE_OFF" if coll.is_visible else "HIDE_ON")
+            row.prop(coll, "is_visible", text="", icon="HIDE_OFF" if coll.is_visible else "HIDE_ON",
+                     emboss=False)
+            row.label(text=coll.name, icon="LOCKED" if coll.name in layers.BUILTIN_LAYERS else "BLANK1")
+            op = row.operator("apex.layer_solo", text="", icon="RADIOBUT_ON")
+            op.layer = coll.name
+            op = row.operator("apex.layer_assign", text="", icon="ADD")
+            op.layer = coll.name
+            if coll.name not in layers.BUILTIN_LAYERS:
+                op = row.operator("apex.layer_remove", text="", icon="X")
+                op.layer = coll.name
+        row = box.row(align=True)
+        row.operator("apex.layer_add", text="Add Layer", icon="PLUS")
+        row.label(text="Select bones, then + to move them", icon="INFO")
 
 
 # ---------------------------------------------------------------------------
@@ -373,6 +438,7 @@ class APEX_PT_animation(APEX_PT_base, Panel):
         row = box.row(align=True)
         row.operator("apex.bake_controls", text="Bake Controls", icon="DUPLICATE")
         row.operator("apex.clear_animation", text="Clear", icon="TRASH")
+        box.operator("apex.bake_pose_mesh", text="Bake Pose to Mesh", icon="MESH_DATA")
 
 
 # ---------------------------------------------------------------------------
@@ -527,18 +593,25 @@ class APEX_PT_live(APEX_PT_base, Panel):
 
 
 
-CLASSES = (
-    APEX_PT_character,
-    APEX_PT_body,
-    APEX_PT_poses,
-    APEX_PT_controls,
-    APEX_PT_skin,
-    APEX_PT_animation,
-    APEX_PT_retarget,
-    APEX_PT_export,
-    APEX_PT_face,
-    APEX_PT_live,
+# (class, order, start collapsed) - BlenRig-style: setup and motion open,
+# secondary tools collapsed under the root panel.
+_CHILDREN = (
+    (APEX_PT_character, 1, False),
+    (APEX_PT_body, 2, False),
+    (APEX_PT_poses, 3, False),
+    (APEX_PT_layers, 4, False),
+    (APEX_PT_controls, 5, True),
+    (APEX_PT_skin, 6, True),
+    (APEX_PT_face, 7, True),
+    (APEX_PT_animation, 8, False),
+    (APEX_PT_retarget, 9, True),
+    (APEX_PT_live, 10, True),
+    (APEX_PT_export, 11, True),
 )
+for _cls, _order, _closed in _CHILDREN:
+    _child(_cls, _order, closed=_closed)
+
+CLASSES = (APEX_PT_general,) + tuple(c for c, _o, _c in _CHILDREN)
 
 
 def register():

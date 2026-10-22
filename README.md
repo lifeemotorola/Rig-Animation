@@ -76,6 +76,7 @@ the mesh-level weights still work — only the joint placement comes from the sk
 | Proportions | 8 presets (Female, Male, Heavy, Slim, Heroic, Child, Stylized, Custom); height, girth/build, head scale, shoulder/chest/waist/hip width, arm & leg length, A-pose angle, finger count |
 | IK limbs | 2-bone IK on arms and legs, `chain_count=2`, **pole targets** auto-calibrated per side, anatomically limited hinges (X limits) with soft Y/Z stiffness |
 | IK ⇄ FK | `ik_arm.L/R`, `ik_leg.L/R` props blend continuously; `Snap IK ▸ FK` / `Snap FK ▸ IK` keep the silhouette to **0.0000 m** |
+| MOCAP per limb | `mocap_arm.L/R`, `mocap_leg.L/R` props (0–1). At 1 the limb's IK turns off (`IK × (1 − MOCAP)`), so retargeted FK keys drive the limb without IK and FK fighting. Adapted from BlenRig's mocap compatibility (see Credits) |
 | Twists | Optional upper-arm / forearm twist bones driven by the hand |
 | Fingers | `finger_curl`, `finger_spread`, `thumb_curl` props drive all 30 phalanges with per-joint falloff |
 | Stretch | `ik_stretch` prop; over-extension error 0.0761 m → **0.0000 m** when enabled |
@@ -277,3 +278,7 @@ dist/apex_rig-1.1.0.zip   built with `blender --command extension build`
 out/                 demo .blend, .glb, .fbx, preview and showcase renders
 tests/               acceptance, deform, fit, extension and v2 regression scripts
 ```
+
+## Credits
+
+The per-limb MOCAP mode is adapted from **BlenRig** (GPL-3.0) by Juan Pablo Bouza, Sav Martin, Zebus3d and Jorge Hernández-Meléndez. This add-on is also GPL-3.0.

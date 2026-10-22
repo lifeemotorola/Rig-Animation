@@ -203,6 +203,9 @@ class APEX_PT_controls(APEX_PT_base, Panel):
                 prop = f"ik_{limb}.{side}"
                 if prop in pb.keys():
                     row.prop(pb, f'["{prop}"]', text=side, slider=True)
+                mprop = f"mocap_{limb}.{side}"
+                if mprop in pb.keys():
+                    row.prop(pb, f'["{mprop}"]', text="MOCAP", slider=True)
                 op = row.operator("apex.toggle_ik", text="", icon="FILE_REFRESH")
                 op.limb = limb
                 op.side = side

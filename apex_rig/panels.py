@@ -438,6 +438,7 @@ class APEX_PT_animation(APEX_PT_base, Panel):
         row = box.row(align=True)
         row.operator("apex.bake_controls", text="Bake Controls", icon="DUPLICATE")
         row.operator("apex.clear_animation", text="Clear", icon="TRASH")
+        box.operator("apex.bake_pose_mesh", text="Bake Pose to Mesh", icon="MESH_DATA")
 
 
 # ---------------------------------------------------------------------------

@@ -677,6 +677,26 @@ def _sample_action(arm, action, frames, slot=None):
     return matrices
 
 
+
+def bake_pose_to_mesh(context, arm, suffix: str = "_Posed") -> list:
+    """Freeze the current pose: one static mesh per skinned mesh, with the
+    armature modifier applied (BlenRig's 'bake current pose to mesh')."""
+    depsgraph = context.evaluated_depsgraph_get()
+    depsgraph.update()
+    out = []
+    for mesh_obj in utils.meshes_of_armature(arm):
+        evaluated = mesh_obj.evaluated_get(depsgraph)
+        me = bpy.data.meshes.new_from_object(evaluated, preserve_all_data_layers=True,
+                                             depsgraph=depsgraph)
+        new_obj = bpy.data.objects.new(mesh_obj.name + suffix, me)
+        new_obj.matrix_world = mesh_obj.matrix_world.copy()
+        targets = list(mesh_obj.users_collection) or [context.scene.collection]
+        for coll in targets:
+            coll.objects.link(new_obj)
+        out.append(new_obj)
+    return out
+
+
 def bake_action(arm, action, name: str, frame_start: float, frame_end: float,
                 step: float = 1.0, visual: bool = True):
     """Bake every pose bone of *arm* from *action* into a new editable action."""

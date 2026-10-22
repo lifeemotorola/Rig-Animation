@@ -171,7 +171,8 @@ class APEX_OT_rig_character(_ApexOp):
                 smooth_iterations=st.smooth_iterations,
                 max_influences=st.max_influences,
                 prefer_skeleton=st.fit_prefer_skeleton,
-                bind=st.fit_skin)
+                bind=st.fit_skin,
+                replace_existing=st.fit_replace_rig)
         except Exception as exc:
             utils.log.exception("rig_character failed")
             self.report({"ERROR"}, f"Could not rig the character: {exc}")

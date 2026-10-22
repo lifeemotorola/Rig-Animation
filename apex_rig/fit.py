@@ -680,7 +680,7 @@ def rig_character(context, meshes, options, facing_pref="AUTO",
 
     stats = []
     if bind:
-        prepare_meshes(meshes)
+        prepare_meshes(meshes, keep_existing_armature=not replace_existing)
         for ob in meshes:
             stats.append(skin_module.skin_mesh(arm, ob, method=skin_method,
                                         smooth_iterations=smooth_iterations,

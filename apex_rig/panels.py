@@ -6,7 +6,7 @@ import bpy
 from bpy.types import Panel
 
 from . import face_icons, properties, rig as rigmod, ui_icons, utils
-from .const import (ADDON_NAME, MOTIONS, PRESETS, PROPS, SKIN_METHODS,
+from .const import (ADDON_NAME, MOTIONS, PROPS, SKIN_METHODS,
                     VERSION_STRING, WALK_PRESETS)
 
 POSE_ORDER = ("A_POSE", "T_POSE", "RELAXED", "COMBAT", "CROUCH", "JUMP",
@@ -91,24 +91,10 @@ class APEX_PT_body(APEX_PT_base, Panel):
     def draw(self, context):
         layout = self.layout
         st = properties.settings(context)
-        icon_ok = ui_icons.icon_id("preset", "FEMALE") != 0
-
-        box = layout.box()
-        box.label(text="Click a body to build it", icon="IMAGE_DATA")
-        items = [(key, data["label"]) for key, data in PRESETS.items()]
-        if icon_ok:
-            ui_icons.picture_grid(
-                box, "apex.build_preset", items, "preset", columns=4,
-                props_for=lambda key: {"preset": key})
-        else:
-            grid = box.grid_flow(columns=2, align=True)
-            for key, label in items:
-                op = grid.operator("apex.build_preset", text=label)
-                op.preset = key
-        if not icon_ok:
-            box.label(text="(thumbnails appear in the Blender UI)", icon="INFO")
 
         # ---- realistic adult body (MakeHuman CC0 data) ----------------
+        # The realistic character is the only body. Poses, motions and
+        # skinning all act on it; the old mannequin presets are no longer offered.
         rbox = layout.box()
         rbox.label(text="Realistic Body (MakeHuman)", icon="USER")
         from .makehuman import PRESETS as REAL
